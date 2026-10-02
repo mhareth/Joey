@@ -3,17 +3,11 @@ import { Property, Agent, AgentChatMessage } from '../types';
 import { 
   X, 
   Send, 
-  Phone, 
-  Mail, 
   Calendar, 
-  Clock, 
   CheckCircle2, 
   Sparkles, 
-  Video, 
-  ShieldCheck, 
   Loader2,
-  FileCheck,
-  User
+  FileCheck
 } from 'lucide-react';
 
 interface AgentChatModalProps {
@@ -33,7 +27,7 @@ export const AgentChatModal: React.FC<AgentChatModalProps> = ({
     {
       id: 'm1',
       sender: 'agent',
-      text: `Hello! I'm ${agent.name} with ${agent.brokerage}. I represent ${property.title} on ${property.address}. How can I assist you today? Would you like to schedule a private walkthrough, or review HOA and seller disclosures?`,
+      text: `مرحباً بك! أنا ${agent.name}، وسيطك العقاري المرخص برخصة فال في ${property.district} بالرياض. يسعدني الإجابة عن مواصفات ${property.title}، أو ترتيب موعد معاينة ميدانية أو جولة افتراضية خاصة.`,
       timestamp: 'Just now',
     }
   ]);
@@ -42,7 +36,7 @@ export const AgentChatModal: React.FC<AgentChatModalProps> = ({
   const [isTyping, setIsTyping] = useState(false);
   const [showBookingModal, setShowBookingModal] = useState(false);
   const [selectedTourType, setSelectedTourType] = useState<'in_person' | 'virtual'>('in_person');
-  const [selectedSlot, setSelectedSlot] = useState('Saturday, 2:00 PM');
+  const [selectedSlot, setSelectedSlot] = useState('السبت، 4:00 عصراً');
   const [tourBooked, setTourBooked] = useState(false);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -55,14 +49,14 @@ export const AgentChatModal: React.FC<AgentChatModalProps> = ({
     scrollToBottom();
   }, [messages, isTyping]);
 
-  const handleSendMessage = async (textToSend?: string) => {
-    const messageContent = textToSend || inputText;
-    if (!messageContent.trim()) return;
+  const handleSendMessage = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!inputText.trim()) return;
 
     const userMsg: AgentChatMessage = {
       id: `u-${Date.now()}`,
       sender: 'user',
-      text: messageContent,
+      text: inputText,
       timestamp: 'Just now',
     };
 
@@ -75,7 +69,7 @@ export const AgentChatModal: React.FC<AgentChatModalProps> = ({
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          userMessage: messageContent,
+          message: userMsg.text,
           agent,
           property,
           history: [...messages, userMsg],
@@ -86,7 +80,7 @@ export const AgentChatModal: React.FC<AgentChatModalProps> = ({
       const replyMsg: AgentChatMessage = {
         id: `a-${Date.now()}`,
         sender: 'agent',
-        text: data.reply || `Thank you for your message. I am preparing the information for ${property.title} right now.`,
+        text: data.reply || `شكراً لتواصلك! قمت بتسجيل استفسارك بخصوص ${property.title} وجاهز للمساعدة.`,
         timestamp: 'Just now',
       };
       setMessages(prev => [...prev, replyMsg]);
@@ -95,7 +89,7 @@ export const AgentChatModal: React.FC<AgentChatModalProps> = ({
       const fallbackMsg: AgentChatMessage = {
         id: `a-${Date.now()}`,
         sender: 'agent',
-        text: `Thank you for reaching out! I've noted your question regarding ${property.title}. I can also host you for an in-person or virtual walkthrough this weekend.`,
+        text: `شكراً لاهتمامك بـ ${property.title}! يسعدني الإجابة عن كافة استفساراتك أو حجز موعد معاينة هذا الأسبوع.`,
         timestamp: 'Just now',
       };
       setMessages(prev => [...prev, fallbackMsg]);
@@ -109,7 +103,7 @@ export const AgentChatModal: React.FC<AgentChatModalProps> = ({
     const confirmationMsg: AgentChatMessage = {
       id: `sys-${Date.now()}`,
       sender: 'system',
-      text: `Appointment Confirmed! ${selectedTourType === 'in_person' ? 'Private In-Person Showing' : '1-on-1 Virtual Guided Tour'} scheduled for ${selectedSlot} at ${property.address}. Calendar invite and agent contact details sent to your email.`,
+      text: `تم تأكيد الموعد بنجاح! ${selectedTourType === 'in_person' ? 'معاينة ميدانية خاصة' : 'جولة افتراضية مباشرة'} محددة بتاريخ ${selectedSlot} في ${property.address}. تم إرسال تفاصيل الموعد إلى بريدك الإلكتروني ورقم هاتفك.`,
       timestamp: 'Just now',
       actionPayload: {
         type: 'tour_booked',
@@ -124,28 +118,28 @@ export const AgentChatModal: React.FC<AgentChatModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-slate-950/85 backdrop-blur-xl animate-in fade-in duration-200">
-      <div className="relative w-full max-w-2xl h-[88vh] bg-slate-950 border border-slate-800 rounded-3xl overflow-hidden shadow-2xl flex flex-col">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/50 backdrop-blur-xs animate-in fade-in duration-200">
+      <div className="relative w-full max-w-2xl h-[88vh] bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-2xl flex flex-col">
         
-        {/* Header Bar */}
-        <div className="px-6 py-4 border-b border-slate-800 bg-slate-900/90 flex items-center justify-between">
+        {/* Header Bar - Redfin Style */}
+        <div className="px-6 py-4 border-b border-gray-200 bg-gray-50 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="relative">
               <img
                 src={agent.avatar}
                 alt={agent.name}
-                className="w-11 h-11 rounded-full object-cover ring-2 ring-amber-400/40"
+                className="w-11 h-11 rounded-full object-cover ring-2 ring-gray-200"
               />
-              <span className="absolute bottom-0 right-0 w-3 h-3 bg-emerald-400 rounded-full ring-2 ring-slate-950" />
+              <span className="absolute bottom-0 right-0 w-3 h-3 bg-emerald-500 rounded-full ring-2 ring-white" />
             </div>
             <div>
               <div className="flex items-center gap-1.5">
-                <h3 className="text-sm font-bold text-white">{agent.name}</h3>
-                <span className="px-1.5 py-0.5 rounded text-[10px] font-semibold bg-amber-400/20 text-amber-300">
-                  Verified Broker
+                <h3 className="text-sm font-bold text-gray-900">{agent.name}</h3>
+                <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-emerald-50 text-emerald-800 border border-emerald-200">
+                  REGA Fal Verified
                 </span>
               </div>
-              <p className="text-xs text-slate-400">
+              <p className="text-xs text-gray-500">
                 {agent.brokerage} • {agent.responseTime}
               </p>
             </div>
@@ -154,14 +148,14 @@ export const AgentChatModal: React.FC<AgentChatModalProps> = ({
           <div className="flex items-center gap-2">
             <button
               onClick={() => setShowBookingModal(true)}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs font-bold transition-all shadow-md active:scale-95"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#C82021] hover:bg-[#b01c1d] text-white text-xs font-bold transition-colors shadow-2xs"
             >
               <Calendar className="w-3.5 h-3.5" />
               Schedule Tour
             </button>
             <button
               onClick={onClose}
-              className="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white transition-all"
+              className="p-1.5 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-400 hover:text-gray-700 transition-colors"
             >
               <X className="w-4 h-4" />
             </button>
@@ -169,27 +163,27 @@ export const AgentChatModal: React.FC<AgentChatModalProps> = ({
         </div>
 
         {/* Property Context Strip */}
-        <div className="px-6 py-2 bg-slate-900/40 border-b border-slate-800/80 flex items-center justify-between text-xs text-slate-400">
-          <span className="truncate">Listing: <strong className="text-slate-200">{property.title}</strong></span>
-          <span className="font-mono-num text-amber-400 font-bold shrink-0 ml-2">
-            ${property.price.toLocaleString()}
+        <div className="px-6 py-2 bg-gray-50 border-b border-gray-200 flex items-center justify-between text-xs text-gray-600">
+          <span className="truncate">العقار: <strong className="text-gray-900 font-bold">{property.title}</strong></span>
+          <span className="font-mono-num text-[#C82021] font-bold shrink-0 ml-2">
+            SAR {property.price.toLocaleString()}
           </span>
         </div>
 
         {/* Message Thread */}
-        <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4 no-scrollbar">
+        <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4 no-scrollbar bg-white">
           {messages.map((msg) => {
-            const isUser = msg.sender === 'user';
+            const isAgent = msg.sender === 'agent';
             const isSystem = msg.sender === 'system';
 
             if (isSystem) {
               return (
-                <div key={msg.id} className="p-3.5 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-xs text-emerald-300 flex items-start gap-2.5">
-                  <CheckCircle2 className="w-4 h-4 shrink-0 mt-0.5 text-emerald-400" />
-                  <div>
-                    <span className="font-bold block mb-0.5">Tour Confirmation</span>
-                    <p className="text-emerald-200 leading-relaxed">{msg.text}</p>
+                <div key={msg.id} className="p-3.5 rounded-xl bg-emerald-50 border border-emerald-200 text-xs text-emerald-800 space-y-1">
+                  <div className="flex items-center gap-1.5 font-bold">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                    <span>تم تأكيد الموعد في التقويم</span>
                   </div>
+                  <p className="leading-relaxed">{msg.text}</p>
                 </div>
               );
             }
@@ -197,24 +191,28 @@ export const AgentChatModal: React.FC<AgentChatModalProps> = ({
             return (
               <div
                 key={msg.id}
-                className={`flex gap-2.5 ${isUser ? 'justify-end' : 'justify-start'}`}
+                className={`flex gap-3 max-w-[85%] ${
+                  isAgent ? 'self-start mr-auto' : 'self-end ml-auto flex-row-reverse'
+                }`}
               >
-                {!isUser && (
+                {isAgent && (
                   <img
                     src={agent.avatar}
                     alt={agent.name}
-                    className="w-7 h-7 rounded-full object-cover shrink-0 mt-1"
+                    className="w-7 h-7 rounded-full object-cover shrink-0 mt-0.5"
                   />
                 )}
-                <div
-                  className={`max-w-[85%] rounded-2xl px-4 py-3 text-xs leading-relaxed ${
-                    isUser
-                      ? 'bg-amber-500 text-slate-950 font-medium rounded-tr-none'
-                      : 'bg-slate-900 border border-slate-800 text-slate-200 rounded-tl-none'
-                  }`}
-                >
-                  <p>{msg.text}</p>
-                  <span className={`text-[10px] mt-1 block text-right ${isUser ? 'text-slate-900/70' : 'text-slate-500'}`}>
+                <div>
+                  <div
+                    className={`p-3.5 rounded-2xl text-xs leading-relaxed ${
+                      isAgent
+                        ? 'bg-gray-100 text-gray-800 rounded-tl-xs'
+                        : 'bg-[#C82021] text-white rounded-tr-xs shadow-xs'
+                    }`}
+                  >
+                    {msg.text}
+                  </div>
+                  <span className="text-[10px] text-gray-400 mt-1 block">
                     {msg.timestamp}
                   </span>
                 </div>
@@ -223,35 +221,26 @@ export const AgentChatModal: React.FC<AgentChatModalProps> = ({
           })}
 
           {isTyping && (
-            <div className="flex gap-2.5 items-center text-xs text-slate-400">
-              <img
-                src={agent.avatar}
-                alt={agent.name}
-                className="w-7 h-7 rounded-full object-cover shrink-0"
-              />
-              <div className="bg-slate-900 border border-slate-800 rounded-2xl px-3.5 py-2 flex items-center gap-1.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
-                <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse delay-75" />
-                <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse delay-150" />
-                <span className="text-[11px] text-slate-400 ml-1">{agent.name} is typing...</span>
-              </div>
+            <div className="flex items-center gap-2 text-xs text-gray-400 p-2">
+              <Loader2 className="w-3.5 h-3.5 animate-spin text-[#C82021]" />
+              <span>الوسيط يكتب رداً الآن...</span>
             </div>
           )}
           <div ref={messagesEndRef} />
         </div>
 
-        {/* Quick Suggestion Chips */}
-        <div className="px-4 py-2 bg-slate-900/40 border-t border-slate-800/80 flex items-center gap-1.5 overflow-x-auto no-scrollbar">
+        {/* Quick Action Suggested Prompts */}
+        <div className="px-4 py-2 bg-gray-50 border-t border-gray-200 flex items-center gap-2 overflow-x-auto no-scrollbar">
           {[
-            'Can I schedule a private tour?',
-            'Is the price negotiable?',
-            'Request HOA rules & disclosures',
-            'Are short-term rentals allowed?'
-          ].map((prompt, i) => (
+            'هل السعر قابل للتفاوض البسيط؟',
+            'هل يوجد شهادة إتمام بناء وكود سعودي؟',
+            'ما هي الضمانات الإنشائية المتوفرة؟',
+            'أرغب بتقديم عرض رسمي بالعربون'
+          ].map((prompt, idx) => (
             <button
-              key={i}
-              onClick={() => handleSendMessage(prompt)}
-              className="px-2.5 py-1 rounded-xl bg-slate-800/80 hover:bg-slate-800 text-slate-300 hover:text-white text-[11px] font-medium whitespace-nowrap transition-colors border border-slate-700/60"
+              key={idx}
+              onClick={() => setInputText(prompt)}
+              className="px-2.5 py-1 rounded-full bg-white border border-gray-200 text-gray-700 hover:border-[#C82021] text-[11px] font-medium whitespace-nowrap transition-colors"
             >
               {prompt}
             </button>
@@ -259,25 +248,19 @@ export const AgentChatModal: React.FC<AgentChatModalProps> = ({
         </div>
 
         {/* Input Bar */}
-        <div className="p-4 bg-slate-900 border-t border-slate-800">
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              handleSendMessage();
-            }}
-            className="flex items-center gap-2"
-          >
+        <div className="p-4 border-t border-gray-200 bg-white">
+          <form onSubmit={handleSendMessage} className="flex items-center gap-2">
             <input
               type="text"
               value={inputText}
               onChange={(e) => setInputText(e.target.value)}
-              placeholder={`Message ${agent.name}...`}
-              className="flex-1 bg-slate-950 border border-slate-800 rounded-2xl px-4 py-2.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-amber-400"
+              placeholder="اكتب استفسارك للوسيط المرخص..."
+              className="flex-1 px-4 py-2.5 bg-gray-50 border border-gray-300 rounded-xl text-xs text-gray-900 focus:outline-none focus:border-[#C82021] shadow-2xs"
             />
             <button
               type="submit"
               disabled={!inputText.trim()}
-              className="p-2.5 rounded-2xl bg-amber-500 hover:bg-amber-400 text-slate-950 transition-all disabled:opacity-40"
+              className="p-2.5 rounded-xl bg-[#C82021] hover:bg-[#b01c1d] text-white transition-colors disabled:opacity-40"
             >
               <Send className="w-4 h-4" />
             </button>
@@ -286,16 +269,16 @@ export const AgentChatModal: React.FC<AgentChatModalProps> = ({
 
         {/* Booking Overlay Modal */}
         {showBookingModal && (
-          <div className="absolute inset-0 bg-slate-950/95 backdrop-blur-xl z-40 p-6 flex flex-col justify-center animate-in fade-in duration-150">
-            <div className="max-w-md mx-auto w-full space-y-5 bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-2xl">
+          <div className="absolute inset-0 bg-black/50 backdrop-blur-xs z-40 p-6 flex flex-col justify-center animate-in fade-in duration-150">
+            <div className="max-w-md mx-auto w-full space-y-4 bg-white border border-gray-200 rounded-2xl p-6 shadow-2xl">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <Calendar className="w-5 h-5 text-amber-400" />
-                  <h4 className="font-bold text-white text-base">Schedule Showing</h4>
+                  <Calendar className="w-5 h-5 text-[#C82021]" />
+                  <h4 className="font-bold text-gray-900 text-sm">حجز موعد معاينة</h4>
                 </div>
                 <button
                   onClick={() => setShowBookingModal(false)}
-                  className="text-slate-400 hover:text-white"
+                  className="p-1 rounded-lg text-gray-400 hover:text-gray-700"
                 >
                   <X className="w-4 h-4" />
                 </button>
@@ -305,47 +288,47 @@ export const AgentChatModal: React.FC<AgentChatModalProps> = ({
               <div className="grid grid-cols-2 gap-2">
                 <button
                   onClick={() => setSelectedTourType('in_person')}
-                  className={`p-3 rounded-2xl border text-xs font-semibold text-center transition-all ${
+                  className={`p-3 rounded-xl border text-xs font-bold text-center transition-colors ${
                     selectedTourType === 'in_person'
-                      ? 'bg-amber-500 text-slate-950 border-amber-400 font-bold'
-                      : 'bg-slate-950 text-slate-400 border-slate-800'
+                      ? 'bg-[#C82021] text-white border-[#C82021] shadow-xs'
+                      : 'bg-white text-gray-700 border-gray-200 hover:bg-gray-50'
                   }`}
                 >
-                  🚶 In-Person Showing
+                  🚶 معاينة ميدانية
                 </button>
                 <button
                   onClick={() => setSelectedTourType('virtual')}
-                  className={`p-3 rounded-2xl border text-xs font-semibold text-center transition-all ${
+                  className={`p-3 rounded-xl border text-xs font-bold text-center transition-colors ${
                     selectedTourType === 'virtual'
-                      ? 'bg-amber-500 text-slate-950 border-amber-400 font-bold'
-                      : 'bg-slate-950 text-slate-400 border-slate-800'
+                      ? 'bg-[#C82021] text-white border-[#C82021] shadow-xs'
+                      : 'bg-white text-gray-700 border-gray-200 hover:bg-gray-50'
                   }`}
                 >
-                  💻 1-on-1 Virtual Tour
+                  💻 جولة افتراضية مباشرة
                 </button>
               </div>
 
               {/* Time Slots */}
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-2">
-                  Select Preferred Date & Time
+                <label className="block text-xs font-bold text-gray-700 mb-2">
+                  اختر اليوم والوقت المناسب
                 </label>
                 <div className="grid grid-cols-2 gap-2">
                   {[
-                    'Tomorrow, 10:30 AM',
-                    'Tomorrow, 3:00 PM',
-                    'Saturday, 11:00 AM',
-                    'Saturday, 2:00 PM',
-                    'Sunday, 1:30 PM',
-                    'Monday, 4:00 PM',
+                    'غداً، 10:30 صباحاً',
+                    'غداً، 4:00 عصراً',
+                    'السبت، 11:00 صباحاً',
+                    'السبت، 4:00 عصراً',
+                    'الأحد، 5:00 مساءً',
+                    'الإثنين، 4:30 عصراً',
                   ].map((slot) => (
                     <button
                       key={slot}
                       onClick={() => setSelectedSlot(slot)}
-                      className={`p-2.5 rounded-xl text-xs border text-left transition-all ${
+                      className={`p-2.5 rounded-xl text-xs border text-center transition-colors ${
                         selectedSlot === slot
-                          ? 'bg-amber-400/20 text-amber-300 border-amber-400/60 font-semibold'
-                          : 'bg-slate-950 text-slate-400 border-slate-800 hover:text-slate-200'
+                          ? 'bg-red-50 text-[#C82021] border-red-200 font-bold'
+                          : 'bg-white text-gray-700 border-gray-200 hover:bg-gray-50'
                       }`}
                     >
                       {slot}
@@ -358,17 +341,17 @@ export const AgentChatModal: React.FC<AgentChatModalProps> = ({
               <button
                 onClick={handleBookTour}
                 disabled={tourBooked}
-                className="w-full flex items-center justify-center gap-2 py-3 rounded-2xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-bold text-xs shadow-xl transition-all"
+                className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-[#C82021] hover:bg-[#b01c1d] text-white font-bold text-xs shadow-xs transition-colors"
               >
                 {tourBooked ? (
                   <>
-                    <CheckCircle2 className="w-4 h-4 text-slate-950" />
-                    Appointment Confirmed!
+                    <CheckCircle2 className="w-4 h-4" />
+                    تم تأكيد الحجز!
                   </>
                 ) : (
                   <>
                     <Calendar className="w-4 h-4" />
-                    Confirm Reservation with {agent.name}
+                    تأكيد الموعد مع {agent.name}
                   </>
                 )}
               </button>

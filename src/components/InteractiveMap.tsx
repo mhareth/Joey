@@ -13,7 +13,8 @@ import {
   MessageSquare,
   Flame,
   ShieldCheck,
-  Building
+  Building,
+  X
 } from 'lucide-react';
 
 interface InteractiveMapProps {
@@ -62,91 +63,74 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
   };
 
   return (
-    <div className="relative w-full h-[520px] lg:h-[620px] rounded-3xl overflow-hidden border border-slate-800 bg-slate-950 shadow-2xl select-none">
+    <div className="relative w-full h-[520px] lg:h-[620px] rounded-2xl overflow-hidden border border-gray-200 bg-[#f4f6f8] shadow-xs select-none">
       
-      {/* Map Header Toolbar */}
+      {/* Map Header Toolbar - Redfin Style */}
       <div className="absolute top-4 left-4 right-4 z-20 flex flex-wrap items-center justify-between gap-3 pointer-events-none">
         
         {/* Layer Selector */}
-        <div className="flex items-center gap-1.5 p-1.5 rounded-2xl bg-slate-900/90 backdrop-blur-xl border border-slate-800 shadow-xl pointer-events-auto">
+        <div className="flex items-center gap-1 p-1 rounded-xl bg-white/95 backdrop-blur-md border border-gray-200 shadow-sm pointer-events-auto">
           <button
             onClick={() => setActiveLayer('blueprint')}
-            className={`flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
+            className={`flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
               activeLayer === 'blueprint'
-                ? 'bg-amber-500 text-slate-950 shadow-sm'
-                : 'text-slate-400 hover:text-slate-200'
+                ? 'bg-[#C82021] text-white shadow-2xs'
+                : 'text-gray-700 hover:text-gray-900 hover:bg-gray-100'
             }`}
           >
             <Compass className="w-3.5 h-3.5" />
-            Riyadh Map (الرياض)
+            <span>خريطة الرياض</span>
           </button>
           <button
             onClick={() => setActiveLayer('heatmap')}
-            className={`flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
+            className={`flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
               activeLayer === 'heatmap'
-                ? 'bg-amber-500 text-slate-950 shadow-sm'
-                : 'text-slate-400 hover:text-slate-200'
+                ? 'bg-[#C82021] text-white shadow-2xs'
+                : 'text-gray-700 hover:text-gray-900 hover:bg-gray-100'
             }`}
           >
             <Flame className="w-3.5 h-3.5" />
-            Price Heatmap (حرارة الأسعار)
+            <span>حرارة الأسعار</span>
           </button>
           <button
             onClick={() => setActiveLayer('metro')}
-            className={`flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
+            className={`flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
               activeLayer === 'metro'
-                ? 'bg-amber-500 text-slate-950 shadow-sm'
-                : 'text-slate-400 hover:text-slate-200'
+                ? 'bg-[#C82021] text-white shadow-2xs'
+                : 'text-gray-700 hover:text-gray-900 hover:bg-gray-100'
             }`}
           >
             <Building className="w-3.5 h-3.5" />
-            KAFD & Metro (كافد والقطار)
-          </button>
-          <button
-            onClick={() => setActiveLayer('schools')}
-            className={`flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
-              activeLayer === 'schools'
-                ? 'bg-amber-500 text-slate-950 shadow-sm'
-                : 'text-slate-400 hover:text-slate-200'
-            }`}
-          >
-            <GraduationCap className="w-3.5 h-3.5" />
-            Schools & Diplomatic
+            <span>كافد ومسار المترو</span>
           </button>
         </div>
 
-        {/* Legend / Status */}
-        <div className="hidden sm:flex items-center gap-3 px-3 py-1.5 rounded-2xl bg-slate-900/90 backdrop-blur-xl border border-slate-800 text-xs text-slate-300 pointer-events-auto">
-          <div className="flex items-center gap-1.5">
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-400"></span>
-            <span>REGA Verified ({properties.length})</span>
-          </div>
-          <div className="flex items-center gap-1.5">
-            <span className="w-2.5 h-2.5 rounded-full bg-amber-400 animate-ping"></span>
-            <span>Riyadh Northern Hub</span>
-          </div>
+        {/* Live Market Tag */}
+        <div className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/95 backdrop-blur-md border border-gray-200 text-xs font-bold text-gray-700 shadow-sm pointer-events-auto">
+          <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping" />
+          <span>REGA Verified · صفقات حية</span>
         </div>
       </div>
 
       {/* Floating Zoom & Control Dock */}
-      <div className="absolute right-4 bottom-6 z-20 flex flex-col gap-1.5 bg-slate-900/90 backdrop-blur-xl border border-slate-800 p-1.5 rounded-2xl shadow-xl">
+      <div className="absolute right-4 bottom-6 z-20 flex flex-col gap-1 bg-white/95 backdrop-blur-md border border-gray-200 p-1 rounded-xl shadow-md">
         <button
           onClick={handleZoomIn}
-          className="p-2 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition-all"
+          className="p-2 rounded-lg text-gray-700 hover:text-[#C82021] hover:bg-gray-50 transition-colors"
           title="Zoom In"
         >
           <ZoomIn className="w-4 h-4" />
         </button>
         <button
           onClick={handleZoomOut}
-          className="p-2 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition-all"
+          className="p-2 rounded-lg text-gray-700 hover:text-[#C82021] hover:bg-gray-50 transition-colors"
           title="Zoom Out"
         >
           <ZoomOut className="w-4 h-4" />
         </button>
         <button
           onClick={handleReset}
-          className="p-2 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition-all border-t border-slate-800/80"
+          className="p-2 rounded-lg text-gray-700 hover:text-[#C82021] hover:bg-gray-50 transition-colors border-t border-gray-100"
           title="Reset View"
         >
           <RotateCcw className="w-4 h-4" />
@@ -167,46 +151,46 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
             transform: `translate(${panOffset.x}px, ${panOffset.y}px) scale(${zoomLevel})`,
           }}
         >
-          {/* Custom SVG Map Base of Riyadh (King Fahd Rd, Northern Ring, KAFD, Wadi Hanifa) */}
+          {/* Custom Clean Light Redfin Map Base of Riyadh */}
           <svg className="w-full h-full min-w-[800px] min-h-[500px]" viewBox="0 0 1000 650" fill="none" xmlns="http://www.w3.org/2000/svg">
             <defs>
-              <linearGradient id="riyadhMapBg" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stopColor="#080c14" />
-                <stop offset="50%" stopColor="#0d1424" />
-                <stop offset="100%" stopColor="#090e1a" />
+              {/* Light Map Background */}
+              <linearGradient id="lightMapBg" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stopColor="#f8fafc" />
+                <stop offset="100%" stopColor="#f1f5f9" />
               </linearGradient>
 
-              {/* Wadi Hanifa lush greenery/waterway */}
+              {/* Wadi Hanifa lush greenery */}
               <linearGradient id="wadiHanifaGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stopColor="#065f46" stopOpacity="0.5" />
-                <stop offset="100%" stopColor="#047857" stopOpacity="0.25" />
+                <stop offset="0%" stopColor="#d1fae5" />
+                <stop offset="100%" stopColor="#a7f3d0" />
               </linearGradient>
 
-              {/* Price Heatmaps */}
+              {/* Price Heatmaps in soft pastel glows */}
               <radialGradient id="heatHittin" cx="38%" cy="36%" r="22%">
-                <stop offset="0%" stopColor="#f59e0b" stopOpacity="0.55" />
-                <stop offset="60%" stopColor="#ef4444" stopOpacity="0.25" />
-                <stop offset="100%" stopColor="#ef4444" stopOpacity="0" />
+                <stop offset="0%" stopColor="#fee2e2" stopOpacity="0.8" />
+                <stop offset="60%" stopColor="#fef2f2" stopOpacity="0.4" />
+                <stop offset="100%" stopColor="#ffffff" stopOpacity="0" />
               </radialGradient>
 
               <radialGradient id="heatKAFD" cx="52%" cy="34%" r="24%">
-                <stop offset="0%" stopColor="#10b981" stopOpacity="0.5" />
-                <stop offset="70%" stopColor="#06b6d4" stopOpacity="0.18" />
-                <stop offset="100%" stopColor="#06b6d4" stopOpacity="0" />
+                <stop offset="0%" stopColor="#dbeafe" stopOpacity="0.8" />
+                <stop offset="70%" stopColor="#eff6ff" stopOpacity="0.4" />
+                <stop offset="100%" stopColor="#ffffff" stopOpacity="0" />
               </radialGradient>
 
               <radialGradient id="heatMalqa" cx="42%" cy="22%" r="20%">
-                <stop offset="0%" stopColor="#8b5cf6" stopOpacity="0.5" />
-                <stop offset="70%" stopColor="#3b82f6" stopOpacity="0.2" />
-                <stop offset="100%" stopColor="#3b82f6" stopOpacity="0" />
+                <stop offset="0%" stopColor="#e0e7ff" stopOpacity="0.8" />
+                <stop offset="70%" stopColor="#eef2ff" stopOpacity="0.4" />
+                <stop offset="100%" stopColor="#ffffff" stopOpacity="0" />
               </radialGradient>
             </defs>
 
-            {/* Background */}
-            <rect width="1000" height="650" fill="url(#riyadhMapBg)" />
+            {/* Base Canvas Fill */}
+            <rect width="1000" height="650" fill="url(#lightMapBg)" />
 
-            {/* Architectural Grid */}
-            <g stroke="rgba(255,255,255,0.025)" strokeWidth="1">
+            {/* Subtle Urban Grid */}
+            <g stroke="#e2e8f0" strokeWidth="0.75" strokeDasharray="3 3">
               {Array.from({ length: 20 }).map((_, i) => (
                 <line key={`v-${i}`} x1={i * 50} y1="0" x2={i * 50} y2="650" />
               ))}
@@ -232,61 +216,71 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
               fill="none"
               strokeLinecap="round"
             />
-            <text x="220" y="320" fill="#34d399" opacity="0.4" fontSize="11" fontWeight="bold" letterSpacing="1">WADI HANIFA (وادي حنيفة)</text>
+            <text x="220" y="320" fill="#059669" opacity="0.6" fontSize="11" fontWeight="bold" letterSpacing="1">WADI HANIFA (وادي حنيفة)</text>
 
             {/* Major Arteries / Ring Roads */}
-            {/* 1. King Fahd Road (North-South Axis) */}
-            <line x1="520" y1="0" x2="520" y2="650" stroke="#475569" strokeWidth="4" opacity="0.8" />
-            <text x="526" y="80" fill="#94a3b8" fontSize="10" fontWeight="bold">KING FAHD ROAD (طريق الملك فهد)</text>
+            {/* 1. King Fahd Road */}
+            <line x1="520" y1="0" x2="520" y2="650" stroke="#cbd5e1" strokeWidth="5" />
+            <text x="528" y="80" fill="#64748b" fontSize="10" fontWeight="bold">KING FAHD ROAD (طريق الملك فهد)</text>
 
-            {/* 2. Northern Ring Road (East-West Axis) */}
-            <line x1="0" y1="310" x2="1000" y2="310" stroke="#475569" strokeWidth="4" opacity="0.8" />
-            <text x="40" y="302" fill="#94a3b8" fontSize="10" fontWeight="bold">NORTHERN RING ROAD (الطريق الدائري الشمالي)</text>
+            {/* 2. Northern Ring Road */}
+            <line x1="0" y1="310" x2="1000" y2="310" stroke="#cbd5e1" strokeWidth="5" />
+            <text x="40" y="302" fill="#64748b" fontSize="10" fontWeight="bold">NORTHERN RING ROAD (الطريق الدائري الشمالي)</text>
 
-            {/* 3. King Salman Road (North East-West) */}
-            <line x1="0" y1="90" x2="1000" y2="90" stroke="#334155" strokeWidth="3" opacity="0.7" />
-            <text x="40" y="82" fill="#64748b" fontSize="10" fontWeight="bold">KING SALMAN ROAD (طريق الملك سلمان)</text>
+            {/* 3. King Salman Road */}
+            <line x1="0" y1="90" x2="1000" y2="90" stroke="#e2e8f0" strokeWidth="4" />
+            <text x="40" y="82" fill="#94a3b8" fontSize="10" fontWeight="bold">KING SALMAN ROAD (طريق الملك سلمان)</text>
 
             {/* 4. Prince Turki Al Awwal Rd */}
-            <line x1="380" y1="0" x2="380" y2="650" stroke="#334155" strokeWidth="2.5" opacity="0.7" />
-            <text x="386" y="520" fill="#64748b" fontSize="10" fontWeight="bold">PRINCE TURKI AL AWWAL</text>
+            <line x1="380" y1="0" x2="380" y2="650" stroke="#e2e8f0" strokeWidth="3" strokeDasharray="6 4" />
+            <text x="385" y="160" fill="#94a3b8" fontSize="9" fontWeight="semibold">Prince Turki Al Awwal Rd</text>
 
-            {/* 5. Olaya Street */}
-            <line x1="600" y1="0" x2="600" y2="650" stroke="#1e293b" strokeWidth="2" opacity="0.8" />
+            {/* 5. Anas Ibn Malik Rd */}
+            <line x1="0" y1="210" x2="1000" y2="210" stroke="#e2e8f0" strokeWidth="3" />
+            <text x="700" y="202" fill="#94a3b8" fontSize="9" fontWeight="semibold">Anas Ibn Malik Rd (طريق أنس بن مالك)</text>
 
-            {/* 6. Anas Ibn Malik Rd */}
-            <line x1="0" y1="180" x2="1000" y2="180" stroke="#1e293b" strokeWidth="2" opacity="0.8" />
-            <text x="40" y="172" fill="#64748b" fontSize="9">ANAS IBN MALIK RD (طريق أنس بن مالك)</text>
+            {/* District Enclosures & Labels */}
+            <g opacity="0.85">
+              {/* Hittin */}
+              <rect x="300" y="220" width="160" height="80" rx="12" fill="#ffffff" stroke="#e2e8f0" strokeWidth="1" />
+              <text x="340" y="255" fill="#1e293b" fontSize="12" fontWeight="bold">HITTIN (حطين)</text>
+              <text x="325" y="275" fill="#64748b" fontSize="9">Avg: SAR 13,200/m²</text>
 
-            {/* Riyadh Metro Blue & Yellow Lines Overlay if active */}
-            {activeLayer === 'metro' && (
-              <g>
-                <line x1="520" y1="20" x2="520" y2="630" stroke="#f59e0b" strokeWidth="3" strokeDasharray="6 4" />
-                <circle cx="520" cy="220" r="14" fill="#f59e0b" fillOpacity="0.3" stroke="#f59e0b" strokeWidth="2" />
-                <text x="540" y="225" fill="#fbbf24" fontSize="11" fontWeight="bold">KAFD Metro Hub (محطة كافد الرئيسية)</text>
+              {/* Al Malqa */}
+              <rect x="300" y="100" width="160" height="90" rx="12" fill="#ffffff" stroke="#e2e8f0" strokeWidth="1" />
+              <text x="330" y="138" fill="#1e293b" fontSize="12" fontWeight="bold">AL MALQA (الملقا)</text>
+              <text x="325" y="158" fill="#64748b" fontSize="9">Avg: SAR 11,500/m²</text>
 
-                <circle cx="520" cy="310" r="10" fill="#f59e0b" fillOpacity="0.3" stroke="#f59e0b" strokeWidth="1.5" />
-                <text x="540" y="315" fill="#fcd34d" fontSize="10">Northern Ring Metro</text>
-              </g>
-            )}
+              {/* KAFD Hub */}
+              <rect x="470" y="210" width="150" height="90" rx="12" fill="#eff6ff" stroke="#bfdbfe" strokeWidth="1.5" />
+              <text x="500" y="245" fill="#1e40af" fontSize="13" fontWeight="bold">KAFD (كافد)</text>
+              <text x="485" y="265" fill="#3b82f6" fontSize="9">Financial District · Metro</text>
 
-            {/* District Titles */}
-            <g fill="#94a3b8" fontSize="13" fontWeight="bold" letterSpacing="1">
-              <text x="310" y="220" fill="#e2e8f0" opacity="0.5">HITTIN (حي حطين)</text>
-              <text x="340" y="130" fill="#e2e8f0" opacity="0.5">AL MALQA (حي الملقا)</text>
-              <text x="540" y="200" fill="#e2e8f0" opacity="0.6">KAFD (كافد)</text>
-              <text x="410" y="380" fill="#e2e8f0" opacity="0.5">AL NAKHEEL (النخيل)</text>
-              <text x="630" y="120" fill="#e2e8f0" opacity="0.5">AL YASMIN (الياسمين)</text>
-              <text x="380" y="560" fill="#e2e8f0" opacity="0.5">DIPLOMATIC QUARTER (حي السفارات)</text>
-              <text x="680" y="80" fill="#cbd5e1" opacity="0.4">AL NARJIS (النرجس)</text>
+              {/* Al Nakheel */}
+              <rect x="300" y="325" width="160" height="80" rx="12" fill="#ffffff" stroke="#e2e8f0" strokeWidth="1" />
+              <text x="325" y="360" fill="#1e293b" fontSize="12" fontWeight="bold">AL NAKHEEL (النخيل)</text>
+
+              {/* Al Yasmin */}
+              <rect x="470" y="100" width="150" height="90" rx="12" fill="#ffffff" stroke="#e2e8f0" strokeWidth="1" />
+              <text x="495" y="140" fill="#1e293b" fontSize="12" fontWeight="bold">AL YASMIN (الياسمين)</text>
             </g>
 
-            {/* Boulevard Riyadh City & Iconic Landmarks */}
-            <rect x="290" y="240" width="60" height="30" rx="6" fill="#f59e0b" fillOpacity="0.1" stroke="#f59e0b" strokeWidth="1" />
-            <text x="320" y="259" fill="#f59e0b" fontSize="8" fontWeight="bold" textAnchor="middle">BOULEVARD CITY</text>
+            {/* Riyadh Landmarks / Points of Interest */}
+            {/* KAFD Landmark */}
+            <g transform="translate(540, 230)">
+              <rect x="-15" y="-15" width="30" height="30" rx="6" fill="#1e3a8a" />
+              <text x="-8" y="5" fill="#ffffff" fontSize="10" fontWeight="bold">🏙️</text>
+            </g>
+
+            {/* Boulevard Riyadh City */}
+            <g transform="translate(340, 290)">
+              <rect x="-12" y="-12" width="24" height="24" rx="6" fill="#be185d" />
+              <text x="-6" y="4" fill="#ffffff" fontSize="9" fontWeight="bold">🎡</text>
+              <text x="16" y="4" fill="#be185d" fontSize="9" fontWeight="bold">Boulevard City</text>
+            </g>
           </svg>
 
-          {/* Interactive Property Map Pins with SAR Prices */}
+          {/* Interactive Property Map Pins - Redfin Signature Price Badges */}
           {properties.map((property) => {
             const isSelected = selectedProperty?.id === property.id;
             return (
@@ -298,29 +292,29 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
                   top: `${property.coordinates.mapY}%`,
                 }}
               >
-                {/* Radar pulse for active/selected */}
+                {/* Redfin Radar pulse for active/selected */}
                 {isSelected && (
-                  <div className="absolute inset-0 w-12 h-12 -left-3 -top-3 rounded-full bg-amber-500/20 pulse-radar pointer-events-none" />
+                  <div className="absolute inset-0 w-12 h-12 -left-3 -top-3 rounded-full bg-red-500/20 pulse-radar pointer-events-none" />
                 )}
 
+                {/* Redfin Pill Pin */}
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
                     onSelectProperty(property);
                   }}
-                  className={`group relative flex items-center gap-1.5 px-3 py-1.5 rounded-full font-bold text-xs shadow-2xl transition-all active:scale-95 ${
+                  className={`group relative flex items-center gap-1 px-2.5 py-1 rounded-full font-bold text-xs shadow-md transition-all active:scale-95 ${
                     isSelected
-                      ? 'bg-amber-400 text-slate-950 ring-4 ring-amber-400/30 scale-110'
-                      : 'bg-slate-900/95 text-white border border-slate-700/80 hover:border-amber-400/60 hover:bg-slate-800 hover:scale-105'
+                      ? 'bg-[#C82021] text-white ring-3 ring-red-200 scale-110'
+                      : 'bg-white text-gray-900 border border-gray-300 hover:border-[#C82021] hover:text-[#C82021] hover:scale-105'
                   }`}
                 >
-                  <MapPin className={`w-3.5 h-3.5 ${isSelected ? 'text-slate-950 fill-slate-950' : 'text-amber-400'}`} />
-                  <span className="font-mono-num tracking-tight font-semibold">
-                    SAR {(property.price / 1000000).toFixed(2)}M
+                  <span className="font-mono-num font-bold tracking-tight">
+                    SAR {(property.price / 1000000).toFixed(1)}M
                   </span>
 
                   {property.status === 'Hot Deal' && (
-                    <span className="w-1.5 h-1.5 rounded-full bg-rose-500"></span>
+                    <span className={`w-1.5 h-1.5 rounded-full ${isSelected ? 'bg-white' : 'bg-[#C82021]'}`}></span>
                   )}
                 </button>
               </div>
@@ -329,57 +323,57 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({
         </div>
       </div>
 
-      {/* Floating Selected Property Quick-Card Overlay */}
+      {/* Floating Selected Property Quick-Card Overlay - Redfin Style */}
       {selectedProperty && (
-        <div className="absolute left-4 right-4 sm:left-6 sm:right-auto sm:w-96 bottom-4 z-30 bg-slate-900/95 backdrop-blur-2xl border border-slate-700/80 rounded-2xl p-4 shadow-2xl animate-in fade-in slide-in-from-bottom-3 duration-200">
+        <div className="absolute left-4 right-4 sm:left-6 sm:right-auto sm:w-96 bottom-4 z-30 bg-white border border-gray-200 rounded-2xl p-4 shadow-xl animate-in fade-in slide-in-from-bottom-3 duration-200">
           <div className="flex items-start gap-3.5">
             <img
               src={selectedProperty.images[0]}
               alt={selectedProperty.title}
-              className="w-24 h-24 rounded-xl object-cover ring-1 ring-white/10 shrink-0"
+              className="w-24 h-24 rounded-xl object-cover ring-1 ring-gray-100 shrink-0"
             />
             <div className="flex-1 min-w-0">
               <div className="flex items-center justify-between gap-1">
-                <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-500/20 text-amber-300 uppercase tracking-wide">
+                <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-gray-100 text-gray-800 uppercase tracking-wide">
                   {selectedProperty.propertyType}
                 </span>
-                <span className="text-sm font-bold text-white font-mono-num">
+                <span className="text-base font-black text-gray-900 font-mono-num">
                   SAR {selectedProperty.price.toLocaleString()}
                 </span>
               </div>
 
-              <h4 className="text-sm font-bold text-white truncate mt-1">
+              <h4 className="text-xs font-bold text-gray-900 truncate mt-1">
                 {selectedProperty.title}
               </h4>
-              <p className="text-xs text-slate-400 truncate">
-                {selectedProperty.district}, {selectedProperty.city}
+              <p className="text-[11px] text-gray-500 truncate">
+                {selectedProperty.address}, {selectedProperty.district}
               </p>
 
-              <div className="flex items-center gap-2.5 text-xs text-slate-300 mt-2 font-mono-num">
-                <span>{selectedProperty.beds} Beds</span>
-                <span>•</span>
-                <span>{selectedProperty.baths} Baths</span>
-                <span>•</span>
+              <div className="flex items-center gap-2 text-xs text-gray-700 mt-2 font-semibold">
+                <span>{selectedProperty.beds} beds</span>
+                <span className="text-gray-300">·</span>
+                <span>{selectedProperty.baths} baths</span>
+                <span className="text-gray-300">·</span>
                 <span>{selectedProperty.sqm} m²</span>
               </div>
             </div>
           </div>
 
           {/* Quick Action Buttons */}
-          <div className="grid grid-cols-2 gap-2 mt-3 pt-3 border-t border-slate-800">
+          <div className="grid grid-cols-2 gap-2 mt-3 pt-3 border-t border-gray-100">
             <button
               onClick={() => onOpenVirtualTour(selectedProperty)}
-              className="flex items-center justify-center gap-1.5 py-1.5 px-3 rounded-xl bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/30 text-amber-300 text-xs font-semibold transition-all"
+              className="flex items-center justify-center gap-1.5 py-1.5 px-3 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-800 text-xs font-semibold transition-colors"
             >
-              <Eye className="w-3.5 h-3.5" />
-              Virtual Tour (جولة 360)
+              <Eye className="w-3.5 h-3.5 text-[#C82021]" />
+              <span>3D Tour</span>
             </button>
             <button
               onClick={() => onOpenAgentChat(selectedProperty)}
-              className="flex items-center justify-center gap-1.5 py-1.5 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-white text-xs font-semibold transition-all"
+              className="flex items-center justify-center gap-1.5 py-1.5 px-3 rounded-xl bg-[#C82021] hover:bg-[#b01c1d] text-white text-xs font-bold transition-colors shadow-2xs"
             >
               <MessageSquare className="w-3.5 h-3.5" />
-              Chat Broker
+              <span>Chat Broker</span>
             </button>
           </div>
         </div>

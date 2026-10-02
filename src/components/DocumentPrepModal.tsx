@@ -58,7 +58,9 @@ export const DocumentPrepModal: React.FC<DocumentPrepModalProps> = ({
       });
 
       const data = await res.json();
-      setGeneratedDoc(data.documentContent);
+      if (data.documentContent) {
+        setGeneratedDoc(data.documentContent);
+      }
     } catch (err) {
       console.error('Failed to generate document', err);
     } finally {
@@ -84,7 +86,7 @@ export const DocumentPrepModal: React.FC<DocumentPrepModalProps> = ({
             <title>اتفاقية عقارية موحدة - ${property.title}</title>
             <style>
               body { font-family: 'Times New Roman', Tahoma, sans-serif; padding: 40px; line-height: 1.8; color: #111; direction: rtl; }
-              h1 { text-align: center; font-size: 22px; border-bottom: 2px solid #222; padding-bottom: 12px; }
+              h1 { text-align: center; font-size: 20px; border-bottom: 2px solid #222; padding-bottom: 12px; }
               pre { font-family: Tahoma, 'Times New Roman', sans-serif; white-space: pre-wrap; font-size: 13px; line-height: 1.8; }
             </style>
           </head>
@@ -102,25 +104,25 @@ export const DocumentPrepModal: React.FC<DocumentPrepModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-slate-950/85 backdrop-blur-xl animate-in fade-in duration-200">
-      <div className="relative w-full max-w-5xl h-[92vh] bg-slate-950 border border-slate-800 rounded-3xl overflow-hidden shadow-2xl flex flex-col">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/50 backdrop-blur-xs animate-in fade-in duration-200">
+      <div className="relative w-full max-w-5xl h-[92vh] bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-2xl flex flex-col">
         
-        {/* Header */}
-        <div className="px-6 py-4 border-b border-slate-800 bg-slate-900/90 flex items-center justify-between">
+        {/* Header - Redfin Style */}
+        <div className="px-6 py-4 border-b border-gray-200 bg-gray-50 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="p-2 rounded-xl bg-amber-500/20 text-amber-400 border border-amber-500/30">
+            <div className="p-2 rounded-xl bg-red-50 text-[#C82021] border border-red-100">
               <FileText className="w-5 h-5" />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h3 className="text-base font-bold text-white">
+                <h3 className="text-base font-bold text-gray-900">
                   عقود البيع والوساطة المعتمدة من الهيئة العامة للعقار
                 </h3>
-                <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-400 text-slate-950 uppercase">
+                <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-50 text-emerald-800 border border-emerald-200 uppercase">
                   REGA Compliant
                 </span>
               </div>
-              <p className="text-xs text-slate-400">
+              <p className="text-xs text-gray-500">
                 {property.title} • {property.district}، الرياض
               </p>
             </div>
@@ -130,15 +132,15 @@ export const DocumentPrepModal: React.FC<DocumentPrepModalProps> = ({
             {generatedDoc && (
               <button
                 onClick={handlePrint}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold border border-slate-700 transition-all"
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white hover:bg-gray-100 text-gray-700 text-xs font-semibold border border-gray-200 transition-colors shadow-2xs"
               >
-                <Printer className="w-3.5 h-3.5" />
+                <Printer className="w-3.5 h-3.5 text-[#C82021]" />
                 طباعة العقد (PDF)
               </button>
             )}
             <button
               onClick={onClose}
-              className="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white transition-all"
+              className="p-1.5 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-400 hover:text-gray-700 transition-colors"
             >
               <X className="w-4 h-4" />
             </button>
@@ -149,108 +151,108 @@ export const DocumentPrepModal: React.FC<DocumentPrepModalProps> = ({
         <div className="flex-1 grid grid-cols-1 lg:grid-cols-12 overflow-hidden">
           
           {/* Left Column: Document Configuration (5 cols) */}
-          <div className="lg:col-span-5 p-6 overflow-y-auto border-r border-slate-800 space-y-5 bg-slate-900/40 no-scrollbar">
+          <div className="lg:col-span-5 p-6 overflow-y-auto border-r border-gray-200 space-y-4 bg-gray-50/50 no-scrollbar">
             
             {/* Document Type Selector */}
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+              <label className="block text-xs font-bold text-gray-700 mb-1.5">
                 نوع النموذج المعتمد
               </label>
               <div className="grid grid-cols-2 gap-2">
                 {[
-                  { id: 'rega_purchase_agreement', label: 'عقد بيع عقاري موحد (REGA)' },
-                  { id: 'araboon_deposit_receipt', label: 'اتفاقية وسند عربون' },
-                  { id: 'letter_of_intent', label: 'خطاب رغبة شراء (LOI)' },
-                  { id: 'structural_warranty_addendum', label: 'ملحق تأمين العيوب الخفية' },
-                ].map((doc) => (
+                  { id: 'rega_purchase_agreement', label: 'عقد وساطة وشراء موحد (REGA)' },
+                  { id: 'araboon_deposit_receipt', label: 'سند استلام عربون رسمي' },
+                  { id: 'letter_of_intent', label: 'خطاب إبداء رغبة جاد (LOI)' },
+                  { id: 'structural_warranty_addendum', label: 'ملحق تأمين ملاذ للعيوب' },
+                ].map((type) => (
                   <button
-                    key={doc.id}
-                    onClick={() => {
-                      setDocType(doc.id as any);
-                      setGeneratedDoc(null);
-                      setIsSigned(false);
-                    }}
-                    className={`p-2.5 rounded-xl text-xs font-semibold border text-left transition-all ${
-                      docType === doc.id
-                        ? 'bg-amber-500 text-slate-950 border-amber-400 font-bold'
-                        : 'bg-slate-950 text-slate-400 border-slate-800 hover:text-white'
+                    key={type.id}
+                    onClick={() => setDocType(type.id as any)}
+                    className={`p-2.5 rounded-xl text-xs font-bold border text-center transition-colors ${
+                      docType === type.id
+                        ? 'bg-[#C82021] text-white border-[#C82021] shadow-xs'
+                        : 'bg-white text-gray-700 border-gray-200 hover:bg-gray-50'
                     }`}
                   >
-                    {doc.label}
+                    {type.label}
                   </button>
                 ))}
               </div>
             </div>
 
-            {/* Buyer Name */}
+            {/* Buyer Full Name */}
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1">
-                اسم المشتري بالكامل (وفق الهوية الوطنية / الإقامة)
+              <label className="block text-xs font-bold text-gray-700 mb-1">
+                اسم المشتري رباعياً (وفق الهوية الوطنية / الإقامة)
               </label>
               <input
                 type="text"
                 value={buyerName}
                 onChange={(e) => setBuyerName(e.target.value)}
-                className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none focus:border-amber-400"
+                className="w-full bg-white border border-gray-300 rounded-xl px-3.5 py-2 text-xs text-gray-900 focus:outline-none focus:border-[#C82021] shadow-2xs"
               />
             </div>
 
             {/* Offer Price & Earnest Money */}
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-2 gap-2">
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">
-                  قيمة العرض بالريال (SAR)
+                <label className="block text-xs font-bold text-gray-700 mb-1">
+                  قيمة العرض المالي (SAR)
                 </label>
                 <input
                   type="number"
+                  step={50000}
                   value={offerPriceSAR}
                   onChange={(e) => setOfferPriceSAR(Number(e.target.value))}
-                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white font-mono-num focus:outline-none focus:border-amber-400"
+                  className="w-full bg-white border border-gray-300 rounded-xl px-3.5 py-2 text-xs text-gray-900 font-mono-num font-bold focus:border-[#C82021] shadow-2xs"
                 />
               </div>
+
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">
-                  مبلغ العربون (SAR)
+                <label className="block text-xs font-bold text-gray-700 mb-1">
+                  مبلغ العربون (2.5%)
                 </label>
                 <input
                   type="number"
                   value={earnestMoneySAR}
                   onChange={(e) => setEarnestMoneySAR(Number(e.target.value))}
-                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white font-mono-num focus:outline-none focus:border-amber-400"
+                  className="w-full bg-white border border-gray-300 rounded-xl px-3.5 py-2 text-xs text-gray-900 font-mono-num focus:border-[#C82021] shadow-2xs"
                 />
               </div>
             </div>
 
-            {/* RETT Tax Calculation Indicator */}
-            <div className="p-3 rounded-2xl bg-slate-950 border border-slate-800 flex items-center justify-between text-xs">
-              <span className="text-slate-400">ضريبة التصرفات العقارية (5% RETT):</span>
-              <span className="font-bold text-amber-400 font-mono-num">SAR {rettTaxSAR.toLocaleString()}</span>
+            {/* Tax Notice Card */}
+            <div className="p-3 rounded-xl bg-red-50/60 border border-red-100 text-xs space-y-1">
+              <div className="flex justify-between font-bold text-[#C82021]">
+                <span>ضريبة التصرفات العقارية التقديرية (RETT 5%):</span>
+                <span className="font-mono-num">SAR {rettTaxSAR.toLocaleString()}</span>
+              </div>
+              <p className="text-[11px] text-gray-600 leading-relaxed">
+                * تطبق ضريبة التصرفات العقارية بنسبة 5% من القيمة الإجمالية وتدفع قبل الإفراغ الإلكتروني لدى وزارة العدل.
+              </p>
             </div>
 
-            {/* Inspection & Closing Days */}
-            <div className="grid grid-cols-2 gap-3">
+            {/* Timelines */}
+            <div className="grid grid-cols-2 gap-2">
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">
-                  مدة الفحص والمعاينة
-                </label>
+                <label className="block text-xs font-bold text-gray-700 mb-1">مهلة المعاينة والفحص</label>
                 <select
                   value={inspectionDays}
                   onChange={(e) => setInspectionDays(Number(e.target.value))}
-                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-amber-400"
+                  className="w-full bg-white border border-gray-300 rounded-xl px-3 py-2 text-xs text-gray-900 focus:outline-none focus:border-[#C82021] shadow-2xs"
                 >
                   <option value={7}>7 أيام عمل</option>
-                  <option value={10}>10 أيام عمل (قياسي)</option>
-                  <option value={14}>14 يوماً للفحص الهندسي</option>
+                  <option value={10}>10 أيام عمل</option>
+                  <option value={14}>14 يوماً</option>
                 </select>
               </div>
+
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">
-                  موعد الإفراغ العقاري
-                </label>
+                <label className="block text-xs font-bold text-gray-700 mb-1">مهلة الإفراغ النهائي</label>
                 <select
                   value={closingDays}
                   onChange={(e) => setClosingDays(Number(e.target.value))}
-                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-amber-400"
+                  className="w-full bg-white border border-gray-300 rounded-xl px-3 py-2 text-xs text-gray-900 focus:outline-none focus:border-[#C82021] shadow-2xs"
                 >
                   <option value={15}>15 يوماً (كاش / إفراغ سريع)</option>
                   <option value={21}>21 يوماً</option>
@@ -261,27 +263,27 @@ export const DocumentPrepModal: React.FC<DocumentPrepModalProps> = ({
 
             {/* Financing Structure */}
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1">
+              <label className="block text-xs font-bold text-gray-700 mb-1">
                 صيغة التمويل والسداد
               </label>
               <input
                 type="text"
                 value={financingType}
                 onChange={(e) => setFinancingType(e.target.value)}
-                className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none focus:border-amber-400"
+                className="w-full bg-white border border-gray-300 rounded-xl px-3.5 py-2 text-xs text-gray-900 focus:outline-none focus:border-[#C82021] shadow-2xs"
               />
             </div>
 
             {/* Special Provisions */}
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1">
+              <label className="block text-xs font-bold text-gray-700 mb-1">
                 شروط إضافية ومرفقات
               </label>
               <textarea
                 rows={2}
                 value={specialProvisions}
                 onChange={(e) => setSpecialProvisions(e.target.value)}
-                className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none focus:border-amber-400"
+                className="w-full bg-white border border-gray-300 rounded-xl px-3.5 py-2 text-xs text-gray-900 focus:outline-none focus:border-[#C82021] shadow-2xs"
               />
             </div>
 
@@ -289,7 +291,7 @@ export const DocumentPrepModal: React.FC<DocumentPrepModalProps> = ({
             <button
               onClick={handleGenerateDoc}
               disabled={isGenerating}
-              className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-2xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-bold text-xs shadow-xl transition-all active:scale-95 disabled:opacity-50"
+              className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-[#C82021] hover:bg-[#b01c1d] text-white font-bold text-xs shadow-xs transition-colors active:scale-95 disabled:opacity-50"
             >
               {isGenerating ? (
                 <>
@@ -306,104 +308,107 @@ export const DocumentPrepModal: React.FC<DocumentPrepModalProps> = ({
           </div>
 
           {/* Right Column: Live Document Preview & E-Signature Pad (7 cols) */}
-          <div className="lg:col-span-7 bg-slate-950 p-6 flex flex-col justify-between overflow-y-auto no-scrollbar">
+          <div className="lg:col-span-7 bg-white p-6 flex flex-col justify-between overflow-y-auto no-scrollbar">
             {generatedDoc ? (
               <div className="space-y-6">
                 {/* Document Sheet */}
-                <div className="p-6 sm:p-8 rounded-2xl bg-slate-900 border border-slate-800 font-serif-display text-slate-200 text-xs shadow-2xl relative">
-                  <div className="flex items-center justify-between pb-3 border-b border-slate-800 font-sans">
-                    <span className="text-[11px] font-bold text-amber-400 uppercase tracking-widest font-mono-num">
+                <div className="p-6 sm:p-8 rounded-xl bg-gray-50 border border-gray-200 text-gray-800 text-xs shadow-xs relative">
+                  <div className="flex items-center justify-between pb-3 border-b border-gray-200 font-sans">
+                    <span className="text-[11px] font-bold text-[#C82021] uppercase tracking-widest font-mono-num">
                       joey.properties | جوي للعقارات — العقود المعتمدة (REGA)
                     </span>
-                    <span className="text-[10px] text-slate-500 font-mono-num">
+                    <span className="text-[10px] text-gray-500 font-mono-num">
                       FAL: {property.agent.falLicense}
                     </span>
                   </div>
 
-                  <pre className="whitespace-pre-wrap font-sans text-xs text-slate-300 leading-relaxed mt-4" dir="rtl">
+                  <pre className="whitespace-pre-wrap font-sans text-xs text-gray-800 leading-relaxed mt-4" dir="rtl">
                     {generatedDoc}
                   </pre>
 
                   {/* Signatures Block */}
-                  <div className="mt-8 pt-6 border-t border-slate-800 font-sans grid grid-cols-1 sm:grid-cols-2 gap-4" dir="rtl">
-                    <div className="p-4 rounded-xl bg-slate-950 border border-slate-800">
-                      <span className="text-[11px] font-bold text-slate-400 block mb-2">توقيع المشتري</span>
+                  <div className="mt-8 pt-6 border-t border-gray-200 font-sans grid grid-cols-1 sm:grid-cols-2 gap-4" dir="rtl">
+                    <div className="p-4 rounded-xl bg-white border border-gray-200">
+                      <span className="text-[11px] font-bold text-gray-600 block mb-2">توقيع المشتري</span>
                       {isSigned ? (
                         <div className="space-y-1">
-                          <span className="text-base font-serif-display text-amber-300 font-bold block">
+                          <span className="text-base text-[#C82021] font-bold block">
                             {signatureText}
                           </span>
-                          <span className="text-[10px] text-emerald-400 flex items-center gap-1 font-mono-num">
+                          <span className="text-[10px] text-emerald-700 flex items-center gap-1 font-mono-num font-bold">
                             <CheckCircle2 className="w-3 h-3" /> تم التوثيق عبر نفاذ الإلكتروني • {new Date().toLocaleDateString('ar-SA')}
                           </span>
                         </div>
                       ) : (
-                        <div className="text-slate-500 text-xs italic">
+                        <div className="text-gray-400 text-xs italic">
                           في انتظار التوقيع الإلكتروني أدناه
                         </div>
                       )}
                     </div>
 
-                    <div className="p-4 rounded-xl bg-slate-950 border border-slate-800">
-                      <span className="text-[11px] font-bold text-slate-400 block mb-2">الوسيط العقاري المرخص (فال)</span>
-                      <span className="text-sm font-semibold text-slate-300 block">
+                    <div className="p-4 rounded-xl bg-white border border-gray-200">
+                      <span className="text-[11px] font-bold text-gray-600 block mb-2">الوسيط العقاري المرخص (فال)</span>
+                      <span className="text-sm font-bold text-gray-900 block">
                         {property.agent.name}
                       </span>
-                      <span className="text-[10px] text-slate-500 font-mono-num">
+                      <span className="text-[10px] text-gray-500 font-mono-num block">
                         رخصة فال: {property.agent.falLicense}
                       </span>
                     </div>
                   </div>
                 </div>
 
-                {/* E-Signature Control Bar */}
+                {/* E-Signature Action Pad */}
                 {!isSigned ? (
-                  <div className="p-4 rounded-2xl bg-slate-900 border border-amber-400/30 flex flex-col sm:flex-row items-center justify-between gap-3">
-                    <div className="flex items-center gap-2">
-                      <PenTool className="w-4 h-4 text-amber-400" />
-                      <div>
-                        <span className="text-xs font-bold text-white block">التوقيع الإلكتروني المعتمد</span>
-                        <span className="text-[11px] text-slate-400">توقيع رقمي متوافق مع نظام التعاملات الإلكترونية ونفاذ</span>
+                  <div className="p-4 rounded-xl bg-gray-50 border border-gray-200 flex flex-col sm:flex-row items-center justify-between gap-4">
+                    <div className="flex items-center gap-3 w-full sm:w-auto">
+                      <div className="p-2 rounded-xl bg-red-50 text-[#C82021]">
+                        <PenTool className="w-5 h-5" />
+                      </div>
+                      <div className="w-full sm:w-auto">
+                        <span className="text-xs font-bold text-gray-900 block">التوقيع الرقمي الفوري</span>
+                        <input
+                          type="text"
+                          value={signatureText}
+                          onChange={(e) => setSignatureText(e.target.value)}
+                          placeholder="اكتب اسمك الثلاثي للتوقيع"
+                          className="mt-1 px-3 py-1.5 bg-white border border-gray-300 rounded-lg text-xs text-gray-900 w-full sm:w-60"
+                        />
                       </div>
                     </div>
+
                     <button
                       onClick={handleSignDocument}
-                      className="px-5 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs shadow-lg transition-all active:scale-95 whitespace-nowrap"
+                      className="w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-2.5 rounded-xl bg-[#C82021] hover:bg-[#b01c1d] text-white font-bold text-xs shadow-xs transition-colors active:scale-95"
                     >
-                      توقيع وإرسال العقد
+                      <CheckCircle2 className="w-4 h-4" />
+                      توقيع وتوثيق العقد عبر نفاذ
                     </button>
                   </div>
                 ) : (
-                  <div className="p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-xs text-emerald-300 flex items-center justify-between">
+                  <div className="p-4 rounded-xl bg-emerald-50 border border-emerald-300 flex items-center justify-between text-xs text-emerald-800">
                     <div className="flex items-center gap-2">
-                      <CheckCircle2 className="w-5 h-5 text-emerald-400" />
-                      <div>
-                        <strong className="block text-sm">تم توقيع العقد وإرساله بنجاح!</strong>
-                        <span>تم تزويد {property.agent.name} بنسخة موثقة لبدء إجراءات الإفراغ بالبورصة العقارية.</span>
-                      </div>
+                      <CheckCircle2 className="w-5 h-5 text-emerald-600" />
+                      <span>العقد موقع وموثق إلكترونياً. جاهز للإرسال للوسيط العقاري والبائع.</span>
                     </div>
                     <button
                       onClick={handlePrint}
-                      className="px-3 py-1.5 rounded-xl bg-emerald-500 text-slate-950 font-bold text-xs"
+                      className="px-3 py-1.5 rounded-lg bg-emerald-700 text-white font-bold text-xs"
                     >
-                      تصدير العقد PDF
+                      تنزيل نسخة PDF
                     </button>
                   </div>
                 )}
               </div>
             ) : (
-              <div className="h-full flex flex-col items-center justify-center text-center p-8 text-slate-500 space-y-4">
-                <div className="w-16 h-16 rounded-3xl bg-slate-900 border border-slate-800 flex items-center justify-center text-amber-400">
-                  <FileText className="w-8 h-8" />
-                </div>
-                <div className="max-w-md">
-                  <h4 className="text-base font-bold text-slate-300">
-                    جاهز لتوليد العقد العقاري المعتمد
-                  </h4>
-                  <p className="text-xs text-slate-400 mt-1 leading-relaxed">
-                    حدد شروط الشراء ومبلغ العربون وطريقة السداد على اليمين، ثم انقر على <strong>توليد العقد المعتمد</strong> لصياغة العقد وإتاحته للتوقيع الرقمي الفوري.
-                  </p>
-                </div>
+              <div className="h-full flex flex-col items-center justify-center text-center p-8 text-gray-400 space-y-3">
+                <FileText className="w-12 h-12 text-gray-300" />
+                <p className="text-sm font-bold text-gray-700">
+                  قم باختيار نوع العقد وتعبئة الشروط ثم اضغط على "توليد العقد"
+                </p>
+                <p className="text-xs max-w-sm text-gray-500">
+                  يتم استدعاء نموذج الذكاء الاصطناعي لتضمين رقم رخصة فال وكود البناء السعودي وبنود الهيئة العامة للعقار.
+                </p>
               </div>
             )}
           </div>

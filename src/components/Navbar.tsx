@@ -39,75 +39,81 @@ export const Navbar: React.FC<NavbarProps> = ({
   setSearchQuery,
 }) => {
   return (
-    <header className="sticky top-0 z-40 w-full border-b border-slate-800 bg-slate-950/85 backdrop-blur-xl">
+    <header className="sticky top-0 z-40 w-full border-b border-gray-200 bg-white shadow-xs">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16 sm:h-20 gap-4">
           
-          {/* Logo & Riyadh AI Beacon */}
+          {/* Redfin-style Logo & Riyadh AI Beacon */}
           <div className="flex items-center gap-3 cursor-pointer shrink-0" onClick={() => setActiveTab('explore')}>
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-amber-600 via-amber-500 to-amber-300 flex items-center justify-center shadow-lg shadow-amber-500/20 ring-1 ring-amber-400/30">
-              <Building2 className="w-5 h-5 text-slate-950 font-bold" />
+            <div className="w-10 h-10 rounded-xl bg-[#C82021] flex items-center justify-center shadow-sm">
+              <Home className="w-5 h-5 text-white font-bold" />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <span className="text-xl font-bold tracking-tight text-white font-mono-num font-serif-display">
-                  joey<span className="text-amber-400">.properties</span>
+                <span className="text-xl font-black tracking-tight text-gray-900 font-sans">
+                  joey<span className="text-[#C82021]">.properties</span>
                 </span>
-                <span className="text-xs font-bold text-amber-300 font-sans tracking-wide">
+                <span className="text-xs font-bold text-gray-700 font-sans tracking-wide">
                   جوي للعقارات
                 </span>
-                <span className="hidden sm:inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-semibold bg-emerald-500/15 text-emerald-300 border border-emerald-400/30">
+                <span className="hidden sm:inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
                   <ShieldCheck className="w-2.5 h-2.5" /> REGA فال
                 </span>
               </div>
-              <p className="text-[11px] text-slate-400 font-medium hidden sm:block">
+              <p className="text-[11px] text-gray-500 font-medium hidden sm:block">
                 منصة الصفقات والذكاء العقاري السعودي • Saudi Real Estate Intelligence
               </p>
             </div>
           </div>
 
-          {/* Quick Search */}
+          {/* Redfin-style Search Bar */}
           <div className="hidden md:flex items-center flex-1 max-w-md mx-4">
-            <div className="relative w-full">
-              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+            <div className="relative w-full flex items-center border border-gray-300 focus-within:border-[#C82021] focus-within:ring-2 focus-within:ring-red-100 rounded-xl overflow-hidden transition-all bg-white shadow-2xs">
+              <Search className="ml-3 w-4 h-4 text-gray-400 shrink-0" />
               <input
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="ابحث في حطين، الملقا، كافد، النخيل (Hittin, KAFD)..."
-                className="w-full pl-10 pr-4 py-2 bg-slate-900/90 border border-slate-800 rounded-xl text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-amber-500/60 focus:ring-1 focus:ring-amber-500/40 transition-all"
+                placeholder="ابحث بالحي، المدينة، أو الرمز (حطين، الملقا، كافد)..."
+                className="w-full px-3 py-2 text-xs sm:text-sm text-gray-900 placeholder-gray-400 focus:outline-none bg-transparent"
               />
-              {searchQuery && (
+              {searchQuery ? (
                 <button
                   onClick={() => setSearchQuery('')}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-slate-400 hover:text-slate-200"
+                  className="px-2 text-xs text-gray-400 hover:text-gray-600"
                 >
-                  Clear
+                  مسح
                 </button>
-              )}
+              ) : null}
+              <button
+                type="button"
+                className="bg-[#C82021] hover:bg-[#b01c1d] text-white p-2.5 px-3 transition-colors shrink-0"
+              >
+                <Search className="w-3.5 h-3.5" />
+              </button>
             </div>
           </div>
 
-          {/* Navigation Pills */}
-          <nav className="hidden lg:flex items-center gap-1 bg-slate-900/80 p-1.5 rounded-2xl border border-slate-800/80">
+          {/* Navigation Tabs - Redfin Clean Typography Style */}
+          <nav className="hidden lg:flex items-center gap-1">
             <button
               onClick={() => setActiveTab('explore')}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
+              className={`flex items-center gap-1.5 px-3 py-2 text-xs font-semibold rounded-lg transition-colors ${
                 activeTab === 'explore'
-                  ? 'bg-amber-500 text-slate-950 shadow-md shadow-amber-500/20'
-                  : 'text-slate-300 hover:text-white hover:bg-slate-800/60'
+                  ? 'text-[#C82021] bg-red-50'
+                  : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
               }`}
             >
               <Compass className="w-3.5 h-3.5" />
-              خريطة الرياض
+              خريطة العقارات
             </button>
 
             <button
               onClick={() => setActiveTab('recommendations')}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
+              className={`flex items-center gap-1.5 px-3 py-2 text-xs font-semibold rounded-lg transition-colors ${
                 activeTab === 'recommendations'
-                  ? 'bg-amber-500 text-slate-950 shadow-md shadow-amber-500/20'
-                  : 'text-slate-300 hover:text-white hover:bg-slate-800/60'
+                  ? 'text-[#C82021] bg-red-50'
+                  : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
               }`}
             >
               <Sparkles className="w-3.5 h-3.5" />
@@ -116,10 +122,10 @@ export const Navbar: React.FC<NavbarProps> = ({
 
             <button
               onClick={() => setActiveTab('market')}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
+              className={`flex items-center gap-1.5 px-3 py-2 text-xs font-semibold rounded-lg transition-colors ${
                 activeTab === 'market'
-                  ? 'bg-amber-500 text-slate-950 shadow-md shadow-amber-500/20'
-                  : 'text-slate-300 hover:text-white hover:bg-slate-800/60'
+                  ? 'text-[#C82021] bg-red-50'
+                  : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
               }`}
             >
               <TrendingUp className="w-3.5 h-3.5" />
@@ -127,35 +133,23 @@ export const Navbar: React.FC<NavbarProps> = ({
             </button>
 
             <button
-              onClick={() => setActiveTab('sell')}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
-                activeTab === 'sell'
-                  ? 'bg-amber-500 text-slate-950 shadow-md shadow-amber-500/20'
-                  : 'text-slate-300 hover:text-white hover:bg-slate-800/60'
-              }`}
-            >
-              <Home className="w-3.5 h-3.5" />
-              بيع وتقييم
-            </button>
-
-            <button
               onClick={() => setActiveTab('mortgage')}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
+              className={`flex items-center gap-1.5 px-3 py-2 text-xs font-semibold rounded-lg transition-colors ${
                 activeTab === 'mortgage'
-                  ? 'bg-amber-500 text-slate-950 shadow-md shadow-amber-500/20'
-                  : 'text-slate-300 hover:text-white hover:bg-slate-800/60'
+                  ? 'text-[#C82021] bg-red-50'
+                  : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
               }`}
             >
               <Calculator className="w-3.5 h-3.5" />
-              التمويل العقاري
+              حاسبة التمويل
             </button>
 
             <button
               onClick={() => setActiveTab('documents')}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
+              className={`flex items-center gap-1.5 px-3 py-2 text-xs font-semibold rounded-lg transition-colors ${
                 activeTab === 'documents'
-                  ? 'bg-amber-500 text-slate-950 shadow-md shadow-amber-500/20'
-                  : 'text-slate-300 hover:text-white hover:bg-slate-800/60'
+                  ? 'text-[#C82021] bg-red-50'
+                  : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
               }`}
             >
               <FileText className="w-3.5 h-3.5" />
@@ -170,90 +164,92 @@ export const Navbar: React.FC<NavbarProps> = ({
               onClick={onOpenPriceAlerts}
               className={`relative p-2.5 rounded-xl border transition-all ${
                 triggeredAlertsCount > 0
-                  ? 'bg-amber-500/15 border-amber-400 text-amber-300 shadow-md shadow-amber-500/10'
-                  : 'bg-slate-900 border-slate-800 text-slate-300 hover:text-amber-400 hover:border-amber-500/30'
+                  ? 'bg-red-50 border-red-200 text-[#C82021]'
+                  : 'bg-white border-gray-200 text-gray-700 hover:text-[#C82021] hover:border-red-200'
               }`}
               title="تنبيهات أسعار العقارات (Saved Price Alerts)"
             >
               <Bell className="w-4 h-4" />
               {priceAlertsCount > 0 && (
-                <span className={`absolute -top-1 -right-1 min-w-[20px] h-5 px-1 text-slate-950 text-[10px] font-extrabold rounded-full flex items-center justify-center shadow ${
-                  triggeredAlertsCount > 0 ? 'bg-emerald-400 animate-pulse' : 'bg-amber-500'
+                <span className={`absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 text-white text-[10px] font-extrabold rounded-full flex items-center justify-center shadow-xs ${
+                  triggeredAlertsCount > 0 ? 'bg-emerald-600 animate-pulse' : 'bg-[#C82021]'
                 }`}>
                   {priceAlertsCount}
                 </span>
               )}
             </button>
 
+            {/* Saved Properties */}
             <button
               onClick={onOpenSaved}
-              className="relative p-2.5 rounded-xl bg-slate-900 border border-slate-800 text-slate-300 hover:text-amber-400 hover:border-amber-500/30 transition-all"
+              className="relative p-2.5 rounded-xl bg-white border border-gray-200 text-gray-700 hover:text-[#C82021] hover:border-red-200 transition-all"
               title="Saved Properties (العقارات المحفوظة)"
             >
               <Heart className="w-4 h-4" />
               {savedCount > 0 && (
-                <span className="absolute -top-1 -right-1 w-5 h-5 bg-amber-500 text-slate-950 text-[10px] font-bold rounded-full flex items-center justify-center shadow">
+                <span className="absolute -top-1 -right-1 w-4 h-4 bg-[#C82021] text-white text-[10px] font-bold rounded-full flex items-center justify-center shadow-xs">
                   {savedCount}
                 </span>
               )}
             </button>
 
+            {/* Redfin Sell / List Home Button */}
             <button
               onClick={() => setActiveTab('sell')}
-              className="hidden sm:inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 shadow-lg shadow-amber-500/15 transition-all active:scale-95"
+              className="hidden sm:inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold border border-[#C82021] text-[#C82021] hover:bg-red-50 transition-colors"
             >
               <Home className="w-3.5 h-3.5" />
-              إضافة عقار للبيع
+              أعلن عن عقارك
             </button>
           </div>
         </div>
 
         {/* Mobile Sub-Navigation Bar */}
-        <div className="flex lg:hidden overflow-x-auto py-2.5 gap-1.5 border-t border-slate-800/80 no-scrollbar">
+        <div className="flex lg:hidden overflow-x-auto py-2.5 gap-1.5 border-t border-gray-200 no-scrollbar">
           <button
             onClick={() => setActiveTab('explore')}
-            className={`px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap ${
-              activeTab === 'explore' ? 'bg-amber-500 text-slate-950 font-semibold' : 'text-slate-400'
+            className={`px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-colors ${
+              activeTab === 'explore' ? 'bg-[#C82021] text-white' : 'text-gray-600 bg-gray-100'
             }`}
           >
-            خريطة الرياض
+            خريطة العقارات
           </button>
           <button
             onClick={() => setActiveTab('recommendations')}
-            className={`px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap ${
-              activeTab === 'recommendations' ? 'bg-amber-500 text-slate-950 font-semibold' : 'text-slate-400'
+            className={`px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-colors ${
+              activeTab === 'recommendations' ? 'bg-[#C82021] text-white' : 'text-gray-600 bg-gray-100'
             }`}
           >
             المطابقة الذكية
           </button>
           <button
             onClick={() => setActiveTab('market')}
-            className={`px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap ${
-              activeTab === 'market' ? 'bg-amber-500 text-slate-950 font-semibold' : 'text-slate-400'
+            className={`px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-colors ${
+              activeTab === 'market' ? 'bg-[#C82021] text-white' : 'text-gray-600 bg-gray-100'
             }`}
           >
             مؤشرات السوق
           </button>
           <button
             onClick={() => setActiveTab('sell')}
-            className={`px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap ${
-              activeTab === 'sell' ? 'bg-amber-500 text-slate-950 font-semibold' : 'text-slate-400'
+            className={`px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-colors ${
+              activeTab === 'sell' ? 'bg-[#C82021] text-white' : 'text-gray-600 bg-gray-100'
             }`}
           >
             تقييم وبيع
           </button>
           <button
             onClick={() => setActiveTab('mortgage')}
-            className={`px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap ${
-              activeTab === 'mortgage' ? 'bg-amber-500 text-slate-950 font-semibold' : 'text-slate-400'
+            className={`px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-colors ${
+              activeTab === 'mortgage' ? 'bg-[#C82021] text-white' : 'text-gray-600 bg-gray-100'
             }`}
           >
             تمويل عقاري
           </button>
           <button
             onClick={() => setActiveTab('documents')}
-            className={`px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap ${
-              activeTab === 'documents' ? 'bg-amber-500 text-slate-950 font-semibold' : 'text-slate-400'
+            className={`px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-colors ${
+              activeTab === 'documents' ? 'bg-[#C82021] text-white' : 'text-gray-600 bg-gray-100'
             }`}
           >
             العقود

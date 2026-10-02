@@ -50,12 +50,22 @@ export const SellHub: React.FC<SellHubProps> = ({
       const res = await fetch('/api/ai/home-valuation', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({
+          address: formData.address,
+          district: formData.district,
+          beds: formData.beds,
+          baths: formData.baths,
+          sqm: formData.sqm,
+          propertyType: formData.propertyType,
+          yearBuilt: formData.yearBuilt,
+          condition: formData.condition,
+          updates: formData.updates,
+        }),
       });
       const data = await res.json();
       setValuationResult(data);
     } catch (err) {
-      console.error('Failed valuation', err);
+      console.error('Failed to run valuation', err);
     } finally {
       setIsLoadingValuation(false);
     }
@@ -64,36 +74,44 @@ export const SellHub: React.FC<SellHubProps> = ({
   const handleGenerateListing = async () => {
     setIsLoadingListing(true);
     try {
-      const res = await fetch('/api/ai/listing-description', {
+      const res = await fetch('/api/ai/generate-listing-copy', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ propertyData: formData }),
+        body: JSON.stringify({
+          property: {
+            ...formData,
+            title: `فيلا ${formData.propertyType} في ${formData.district}`,
+          },
+          targetAudience: 'العائلات والمستثمرون الباحثون عن الجودة في الرياض',
+        }),
       });
       const data = await res.json();
       setListingCopy(data);
     } catch (err) {
-      console.error('Failed listing copy', err);
+      console.error('Failed to generate listing copy', err);
     } finally {
       setIsLoadingListing(false);
     }
   };
 
   const handlePublishProperty = () => {
-    const price = valuationResult?.recommendedListPrice || 5200000;
+    const price = valuationResult?.recommendedListPrice || 5800000;
     const newProp: Property = {
-      id: `prop-riyadh-${Date.now()}`,
-      title: listingCopy?.headline || `فيلا مودرن فاخرة في ${formData.district}`,
-      tagline: `${formData.beds} أجنحة ماستر بمساحة بناء ${formData.sqm} م² مع مصعد وتأمين ملاذ ضد العيوب الخفية`,
-      price,
+      id: `prop-riyadh-seller-${Date.now()}`,
+      title: listingCopy?.headline || `فيلا ${formData.propertyType} فاخرة في ${formData.district}`,
+      titleAr: `فيلا مودرن للبيع في ${formData.district} بالرياض`,
+      tagline: formData.updates,
+      price: price,
+      originalPrice: price,
       address: formData.address,
       district: formData.district,
       city: 'Riyadh',
       zip: formData.zip,
       coordinates: {
-        lat: 24.8020,
-        lng: 46.6110,
-        mapX: 43,
-        mapY: 24,
+        lat: 24.7820,
+        lng: 46.6180,
+        mapX: 42,
+        mapY: 22,
       },
       beds: formData.beds,
       baths: formData.baths,
@@ -177,50 +195,50 @@ export const SellHub: React.FC<SellHubProps> = ({
   };
 
   return (
-    <div className="max-w-7xl mx-auto space-y-8 animate-in fade-in duration-300">
+    <div className="max-w-7xl mx-auto space-y-6 animate-in fade-in duration-300">
       
-      {/* Header */}
-      <div className="bg-gradient-to-r from-slate-900 via-slate-900/90 to-amber-950/40 border border-slate-800 rounded-3xl p-6 sm:p-10 backdrop-blur-xl shadow-2xl relative overflow-hidden">
+      {/* Header - Redfin Style */}
+      <div className="bg-white border border-gray-200 rounded-2xl p-6 sm:p-8 shadow-xs relative overflow-hidden">
         <div className="max-w-3xl">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-400/10 border border-amber-400/20 text-amber-300 text-xs font-bold mb-3">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-red-50 text-[#C82021] text-xs font-bold mb-3">
             <Home className="w-3.5 h-3.5" />
-            Riyadh Property Seller Suite & AI Valuation (التقييم العقاري الذكي بالرياض)
+            <span>Redfin Home Value • تقييم العقارات الفوري بالرياض</span>
           </div>
-          <h1 className="text-2xl sm:text-4xl font-extrabold text-white tracking-tight font-serif-display">
-            Sell for Maximum Value in Riyadh with AI
+          <h1 className="text-2xl sm:text-3xl font-black text-gray-900 tracking-tight font-sans">
+            Sell for Maximum Value in Riyadh with joey.properties
           </h1>
-          <p className="text-sm sm:text-base text-slate-300 mt-2 leading-relaxed">
+          <p className="text-sm text-gray-600 mt-2 leading-relaxed">
             احصل على تقييم فوري بالريال السعودي لعقارك بالرياض وفق مؤشرات الصفقات المعتمدة من الهيئة العامة للعقار، واكتشف أعلى التحسينات الإنشائية عائداً قبل طرح العقار للبيع.
           </p>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         
         {/* Left Column: Property Intake Form (5 cols) */}
-        <div className="lg:col-span-5 bg-slate-900/80 border border-slate-800 rounded-3xl p-6 sm:p-7 shadow-xl space-y-4 backdrop-blur-xl">
-          <h3 className="text-base font-bold text-white pb-3 border-b border-slate-800 flex items-center gap-2">
-            <Building2 className="w-4 h-4 text-amber-400" />
+        <div className="lg:col-span-5 bg-white border border-gray-200 rounded-2xl p-5 sm:p-6 shadow-xs space-y-4">
+          <h3 className="text-sm font-bold text-gray-900 pb-3 border-b border-gray-100 flex items-center gap-2">
+            <Building2 className="w-4 h-4 text-[#C82021]" />
             بيانات العقار في الرياض
           </h3>
 
           <div>
-            <label className="block text-xs font-semibold text-slate-300 mb-1">العنوان والشارع (Street Address)</label>
+            <label className="block text-xs font-bold text-gray-700 mb-1">العنوان والشارع (Street Address)</label>
             <input
               type="text"
               value={formData.address}
               onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-              className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none focus:border-amber-400"
+              className="w-full bg-white border border-gray-300 rounded-xl px-3.5 py-2 text-xs text-gray-900 focus:outline-none focus:border-[#C82021] shadow-2xs"
             />
           </div>
 
           <div className="grid grid-cols-2 gap-2">
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1">الحي (District)</label>
+              <label className="block text-xs font-bold text-gray-700 mb-1">الحي (District)</label>
               <select
                 value={formData.district}
                 onChange={(e) => setFormData({ ...formData, district: e.target.value })}
-                className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white"
+                className="w-full bg-white border border-gray-300 rounded-xl px-3 py-2 text-xs text-gray-900 focus:border-[#C82021] shadow-2xs"
               >
                 <option value="Hittin (حي حطين)">Hittin (حطين)</option>
                 <option value="Al Malqa (حي الملقا)">Al Malqa (الملقا)</option>
@@ -232,66 +250,66 @@ export const SellHub: React.FC<SellHubProps> = ({
               </select>
             </div>
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1">المدينة (City)</label>
+              <label className="block text-xs font-bold text-gray-700 mb-1">المدينة (City)</label>
               <input
                 type="text"
                 disabled
                 value="الرياض (Riyadh)"
-                className="w-full bg-slate-950/60 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-400 cursor-not-allowed"
+                className="w-full bg-gray-100 border border-gray-200 rounded-xl px-3 py-2 text-xs text-gray-500 cursor-not-allowed"
               />
             </div>
           </div>
 
           <div className="grid grid-cols-2 gap-2">
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1">مسطح البناء (م²)</label>
+              <label className="block text-xs font-bold text-gray-700 mb-1">مسطح البناء (م²)</label>
               <input
                 type="number"
                 value={formData.sqm}
                 onChange={(e) => setFormData({ ...formData, sqm: Number(e.target.value) })}
-                className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white"
+                className="w-full bg-white border border-gray-300 rounded-xl px-3 py-2 text-xs text-gray-900 shadow-2xs"
               />
             </div>
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1">مساحة الأرض (م²)</label>
+              <label className="block text-xs font-bold text-gray-700 mb-1">مساحة الأرض (م²)</label>
               <input
                 type="number"
                 value={formData.landAreaSqm}
                 onChange={(e) => setFormData({ ...formData, landAreaSqm: Number(e.target.value) })}
-                className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white"
+                className="w-full bg-white border border-gray-300 rounded-xl px-3 py-2 text-xs text-gray-900 shadow-2xs"
               />
             </div>
           </div>
 
           <div className="grid grid-cols-2 gap-2">
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1">غرف النوم</label>
+              <label className="block text-xs font-bold text-gray-700 mb-1">غرف النوم</label>
               <input
                 type="number"
                 value={formData.beds}
                 onChange={(e) => setFormData({ ...formData, beds: Number(e.target.value) })}
-                className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white"
+                className="w-full bg-white border border-gray-300 rounded-xl px-3 py-2 text-xs text-gray-900 shadow-2xs"
               />
             </div>
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1">دورات المياه</label>
+              <label className="block text-xs font-bold text-gray-700 mb-1">دورات المياه</label>
               <input
                 type="number"
                 step="0.5"
                 value={formData.baths}
                 onChange={(e) => setFormData({ ...formData, baths: Number(e.target.value) })}
-                className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white"
+                className="w-full bg-white border border-gray-300 rounded-xl px-3 py-2 text-xs text-gray-900 shadow-2xs"
               />
             </div>
           </div>
 
           <div className="grid grid-cols-2 gap-2">
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1">نوع العقار</label>
+              <label className="block text-xs font-bold text-gray-700 mb-1">نوع العقار</label>
               <select
                 value={formData.propertyType}
                 onChange={(e) => setFormData({ ...formData, propertyType: e.target.value as any })}
-                className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white"
+                className="w-full bg-white border border-gray-300 rounded-xl px-3 py-2 text-xs text-gray-900 shadow-2xs"
               >
                 <option value="Luxury Modern Villa">فيلا مودرن فاخرة</option>
                 <option value="Contemporary Palace">قصر عصري</option>
@@ -301,23 +319,23 @@ export const SellHub: React.FC<SellHubProps> = ({
               </select>
             </div>
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1">سنة البناء</label>
+              <label className="block text-xs font-bold text-gray-700 mb-1">سنة البناء</label>
               <input
                 type="number"
                 value={formData.yearBuilt}
                 onChange={(e) => setFormData({ ...formData, yearBuilt: Number(e.target.value) })}
-                className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white"
+                className="w-full bg-white border border-gray-300 rounded-xl px-3 py-2 text-xs text-gray-900 shadow-2xs"
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-slate-300 mb-1">المزايا والتشطيبات الخاصة</label>
+            <label className="block text-xs font-bold text-gray-700 mb-1">المزايا والتشطيبات الخاصة</label>
             <textarea
               rows={2}
               value={formData.updates}
               onChange={(e) => setFormData({ ...formData, updates: e.target.value })}
-              className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none focus:border-amber-400"
+              className="w-full bg-white border border-gray-300 rounded-xl px-3.5 py-2 text-xs text-gray-900 focus:outline-none focus:border-[#C82021] shadow-2xs"
             />
           </div>
 
@@ -326,7 +344,7 @@ export const SellHub: React.FC<SellHubProps> = ({
             <button
               onClick={handleRunValuation}
               disabled={isLoadingValuation}
-              className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-2xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-bold text-xs shadow-xl transition-all disabled:opacity-50"
+              className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-[#C82021] hover:bg-[#b01c1d] text-white font-bold text-xs shadow-xs transition-colors disabled:opacity-50"
             >
               {isLoadingValuation ? (
                 <>
@@ -344,7 +362,7 @@ export const SellHub: React.FC<SellHubProps> = ({
             <button
               onClick={handleGenerateListing}
               disabled={isLoadingListing}
-              className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-2xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold border border-slate-700 transition-all disabled:opacity-50"
+              className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-800 text-xs font-bold border border-gray-200 transition-colors disabled:opacity-50"
             >
               {isLoadingListing ? (
                 <>
@@ -353,7 +371,7 @@ export const SellHub: React.FC<SellHubProps> = ({
                 </>
               ) : (
                 <>
-                  <Tag className="w-3.5 h-3.5 text-amber-400" />
+                  <Tag className="w-3.5 h-3.5 text-[#C82021]" />
                   توليد الوصف التسويقي المعتمد بالذكاء الاصطناعي
                 </>
               )}
@@ -367,54 +385,54 @@ export const SellHub: React.FC<SellHubProps> = ({
             <div className="space-y-6 animate-in fade-in duration-300">
               
               {/* Valuation Card */}
-              <div className="bg-slate-900/90 border border-slate-800 rounded-3xl p-6 sm:p-8 backdrop-blur-xl shadow-xl">
-                <div className="flex items-center justify-between pb-3 border-b border-slate-800">
-                  <span className="text-xs font-bold text-amber-300 uppercase tracking-wider font-mono-num">
-                    تقرير التقييم العقاري المعتمد • joey.properties (جوي للعقارات)
+              <div className="bg-white border border-gray-200 rounded-2xl p-6 sm:p-8 shadow-xs">
+                <div className="flex items-center justify-between pb-3 border-b border-gray-100">
+                  <span className="text-xs font-bold text-[#C82021] uppercase tracking-wider font-mono-num">
+                    تقرير التقييم العقاري المعتمد • joey.properties
                   </span>
-                  <span className="text-xs text-emerald-400 font-mono-num font-bold">
+                  <span className="text-xs text-emerald-700 font-bold">
                     {valuationResult.confidenceScore}% دقة التقييم
                   </span>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 my-5">
-                  <div className="p-4 rounded-2xl bg-slate-950 border border-slate-800">
-                    <span className="text-xs text-slate-400 block mb-1">السعر المقترح للطرح بالرياض</span>
-                    <span className="text-2xl sm:text-3xl font-extrabold text-white font-mono-num">
+                  <div className="p-4 rounded-xl bg-gray-50 border border-gray-200">
+                    <span className="text-xs text-gray-500 block mb-1">السعر المقترح للطرح بالرياض</span>
+                    <span className="text-2xl sm:text-3xl font-black text-gray-900 font-mono-num">
                       SAR {valuationResult.recommendedListPrice?.toLocaleString()}
                     </span>
                   </div>
 
-                  <div className="p-4 rounded-2xl bg-slate-950 border border-slate-800">
-                    <span className="text-xs text-slate-400 block mb-1">النطاق التقديري للقيمة السوقية</span>
-                    <span className="text-base sm:text-lg font-bold text-amber-300 font-mono-num">
+                  <div className="p-4 rounded-xl bg-gray-50 border border-gray-200">
+                    <span className="text-xs text-gray-500 block mb-1">النطاق التقديري للقيمة السوقية</span>
+                    <span className="text-base sm:text-lg font-bold text-[#C82021] font-mono-num">
                       SAR {valuationResult.estimatedValueMin?.toLocaleString()} - {valuationResult.estimatedValueMax?.toLocaleString()}
                     </span>
-                    <span className="text-[11px] text-slate-400 block mt-0.5">
+                    <span className="text-[11px] text-gray-500 block mt-0.5">
                       متوسط مدة الإتمام: <strong>{valuationResult.projectedDaysOnMarket} يوماً</strong>
                     </span>
                   </div>
                 </div>
 
-                <p className="text-xs text-slate-300 leading-relaxed bg-slate-950/60 p-4 rounded-2xl border border-slate-800/80">
+                <p className="text-xs text-gray-700 leading-relaxed bg-gray-50 p-4 rounded-xl border border-gray-200">
                   {valuationResult.marketAnalysis}
                 </p>
 
                 {/* Pre-Listing High-ROI Touchups */}
                 {valuationResult.roiUpgrades && (
                   <div className="mt-5">
-                    <h4 className="text-xs font-bold text-slate-300 uppercase tracking-wide mb-3 flex items-center gap-1.5">
-                      <Wrench className="w-3.5 h-3.5 text-amber-400" />
+                    <h4 className="text-xs font-bold text-gray-700 uppercase tracking-wide mb-3 flex items-center gap-1.5">
+                      <Wrench className="w-3.5 h-3.5 text-[#C82021]" />
                       أعلى 3 تحسينات عقارية عائداً قبل الطرح بالرياض
                     </h4>
                     <div className="space-y-2">
                       {valuationResult.roiUpgrades.map((u: any, i: number) => (
-                        <div key={i} className="flex items-center justify-between p-3 rounded-xl bg-slate-950 border border-slate-800 text-xs">
+                        <div key={i} className="flex items-center justify-between p-3 rounded-xl bg-gray-50 border border-gray-200 text-xs">
                           <div>
-                            <span className="font-semibold text-white block">{u.upgrade}</span>
-                            <span className="text-[11px] text-slate-400">التكلفة التقديرية: {u.estimatedCost}</span>
+                            <span className="font-bold text-gray-800 block">{u.upgrade}</span>
+                            <span className="text-[11px] text-gray-500">التكلفة التقديرية: {u.estimatedCost}</span>
                           </div>
-                          <span className="px-2.5 py-1 rounded-lg text-emerald-400 bg-emerald-500/10 font-bold font-mono-num">
+                          <span className="px-2.5 py-1 rounded-lg text-emerald-800 bg-emerald-50 font-bold font-mono-num">
                             {u.valueAdd}
                           </span>
                         </div>
@@ -426,23 +444,23 @@ export const SellHub: React.FC<SellHubProps> = ({
 
               {/* Listing Copy Box if generated */}
               {listingCopy && (
-                <div className="bg-slate-900/90 border border-slate-800 rounded-3xl p-6 sm:p-7 backdrop-blur-xl shadow-xl space-y-4">
+                <div className="bg-white border border-gray-200 rounded-2xl p-6 sm:p-7 shadow-xs space-y-4">
                   <div className="flex items-center justify-between">
-                    <h4 className="text-sm font-bold text-white">الوصف التسويقي الجاهز للنشر</h4>
-                    <span className="text-[11px] text-amber-400 font-semibold">جاهز للربط مع منصة إيجار والبورصة العقارية</span>
+                    <h4 className="text-sm font-bold text-gray-900">الوصف التسويقي الجاهز للنشر</h4>
+                    <span className="text-[11px] text-emerald-700 font-semibold">جاهز للربط مع منصة إيجار والبورصة العقارية</span>
                   </div>
 
-                  <h3 className="text-base font-bold text-amber-300 font-serif-display">
+                  <h3 className="text-base font-bold text-[#C82021]">
                     "{listingCopy.headline}"
                   </h3>
-                  <p className="text-xs text-slate-300 leading-relaxed whitespace-pre-wrap">
+                  <p className="text-xs text-gray-700 leading-relaxed whitespace-pre-wrap">
                     {listingCopy.description}
                   </p>
 
                   <div className="space-y-1.5 pt-2">
                     {listingCopy.keyBullets?.map((bullet: string, i: number) => (
-                      <div key={i} className="flex items-center gap-2 text-xs text-slate-300">
-                        <CheckCircle2 className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+                      <div key={i} className="flex items-center gap-2 text-xs text-gray-700">
+                        <CheckCircle2 className="w-3.5 h-3.5 text-[#C82021] shrink-0" />
                         <span>{bullet}</span>
                       </div>
                     ))}
@@ -452,15 +470,15 @@ export const SellHub: React.FC<SellHubProps> = ({
                   {!published ? (
                     <button
                       onClick={handlePublishProperty}
-                      className="w-full flex items-center justify-center gap-2 py-3 rounded-2xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs shadow-xl transition-all active:scale-95 mt-4"
+                      className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-[#C82021] hover:bg-[#b01c1d] text-white font-bold text-xs shadow-xs transition-colors active:scale-95 mt-4"
                     >
                       <PlusCircle className="w-4 h-4" />
                       نشر العقار فوراً في خريطة وسوق عقارات الرياض
                     </button>
                   ) : (
-                    <div className="p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-xs text-emerald-300 flex items-center justify-between mt-4">
+                    <div className="p-4 rounded-xl bg-emerald-50 border border-emerald-300 text-xs text-emerald-800 flex items-center justify-between mt-4">
                       <div className="flex items-center gap-2">
-                        <CheckCircle2 className="w-5 h-5 text-emerald-400" />
+                        <CheckCircle2 className="w-5 h-5 text-emerald-600" />
                         <div>
                           <strong className="block text-sm">تم إدراج العقار بنجاح في سوق الرياض!</strong>
                           <span>أصبح العقار متاحاً الآن للمشترين والمستثمرين والجولات الافتراضية.</span>
@@ -468,7 +486,7 @@ export const SellHub: React.FC<SellHubProps> = ({
                       </div>
                       <button
                         onClick={onViewExplore}
-                        className="px-4 py-2 rounded-xl bg-emerald-500 text-slate-950 font-bold text-xs"
+                        className="px-4 py-2 rounded-xl bg-emerald-700 text-white font-bold text-xs"
                       >
                         عرض على الخريطة
                       </button>
@@ -478,15 +496,15 @@ export const SellHub: React.FC<SellHubProps> = ({
               )}
             </div>
           ) : (
-            <div className="h-full flex flex-col items-center justify-center text-center p-8 bg-slate-900/40 border border-slate-800 rounded-3xl text-slate-500 space-y-4">
-              <div className="w-16 h-16 rounded-3xl bg-slate-900 border border-slate-800 flex items-center justify-center text-amber-400">
+            <div className="h-full flex flex-col items-center justify-center text-center p-8 bg-white border border-gray-200 rounded-2xl text-gray-500 space-y-4 shadow-xs">
+              <div className="w-16 h-16 rounded-2xl bg-gray-100 flex items-center justify-center text-[#C82021]">
                 <Sparkles className="w-8 h-8" />
               </div>
               <div className="max-w-md">
-                <h4 className="text-base font-bold text-slate-300">
+                <h4 className="text-base font-bold text-gray-900">
                   محرك التقييم العقاري الذكي في الرياض
                 </h4>
-                <p className="text-xs text-slate-400 mt-1 leading-relaxed">
+                <p className="text-xs text-gray-500 mt-1 leading-relaxed">
                   أدخل مواصفات عقارك في شمال الرياض واضغط على <strong>حساب التقييم العقاري الذكي</strong> للوصول إلى القيمة العادلة بالسوق، وتوصيات رفع القيمة قبل فتح باب المعاينات.
                 </p>
               </div>

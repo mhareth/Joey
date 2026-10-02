@@ -13,7 +13,8 @@ import {
   ChevronLeft, 
   ChevronRight,
   ShieldCheck,
-  Bell
+  Bell,
+  Camera
 } from 'lucide-react';
 
 interface PropertyCardProps {
@@ -51,7 +52,7 @@ export const PropertyCard: React.FC<PropertyCardProps> = ({
     setCurrentImgIndex((prev) => (prev - 1 + property.images.length) % property.images.length);
   };
 
-  // Estimated monthly Sharia Murabaha installment (assuming 15% down, 3.99% profit rate over 25 years)
+  // Estimated monthly Sharia Murabaha installment
   const loanSAR = property.price * 0.85;
   const monthlyRate = 0.0399 / 12;
   const n = 25 * 12;
@@ -59,58 +60,56 @@ export const PropertyCard: React.FC<PropertyCardProps> = ({
     (loanSAR * monthlyRate * Math.pow(1 + monthlyRate, n)) / (Math.pow(1 + monthlyRate, n) - 1)
   );
 
+  const isPriceDropped = Boolean(property.originalPrice && property.originalPrice > property.price);
+  const priceDropAmount = isPriceDropped ? property.originalPrice! - property.price : 0;
+
   return (
     <div 
       onClick={() => onSelectProperty?.(property)}
-      className="group bg-slate-900/80 hover:bg-slate-900 border border-slate-800 hover:border-amber-500/40 rounded-3xl overflow-hidden shadow-xl hover:shadow-2xl hover:shadow-amber-500/5 transition-all duration-300 flex flex-col cursor-pointer"
+      className="group bg-white border border-gray-200 hover:border-gray-300 rounded-2xl overflow-hidden shadow-xs hover:shadow-lg transition-all duration-200 flex flex-col cursor-pointer"
     >
-      {/* Image Carousel Container */}
-      <div className="relative aspect-[16/10] overflow-hidden bg-slate-950">
+      {/* Redfin Image Carousel Container */}
+      <div className="relative aspect-[16/10] overflow-hidden bg-gray-100">
         <img
           src={property.images[currentImgIndex]}
           alt={property.title}
-          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+          className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-103"
         />
 
-        {/* Carousel controls */}
+        {/* Carousel arrows */}
         {property.images.length > 1 && (
           <>
             <button
               onClick={prevImage}
-              className="absolute left-2.5 top-1/2 -translate-y-1/2 p-1.5 rounded-full bg-slate-950/70 hover:bg-slate-900 text-white backdrop-blur-md opacity-0 group-hover:opacity-100 transition-opacity"
+              className="absolute left-2 top-1/2 -translate-y-1/2 p-1.5 rounded-full bg-white/90 hover:bg-white text-gray-800 shadow-sm opacity-0 group-hover:opacity-100 transition-opacity"
             >
               <ChevronLeft className="w-4 h-4" />
             </button>
             <button
               onClick={nextImage}
-              className="absolute right-2.5 top-1/2 -translate-y-1/2 p-1.5 rounded-full bg-slate-950/70 hover:bg-slate-900 text-white backdrop-blur-md opacity-0 group-hover:opacity-100 transition-opacity"
+              className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 rounded-full bg-white/90 hover:bg-white text-gray-800 shadow-sm opacity-0 group-hover:opacity-100 transition-opacity"
             >
               <ChevronRight className="w-4 h-4" />
             </button>
           </>
         )}
 
-        {/* Top Badges */}
-        <div className="absolute top-3 left-3 right-3 flex items-center justify-between pointer-events-none">
+        {/* Top Badges - Redfin Style */}
+        <div className="absolute top-2.5 left-2.5 right-2.5 flex items-center justify-between pointer-events-none">
           <div className="flex items-center gap-1.5 flex-wrap">
-            <span className="px-2.5 py-1 rounded-xl text-[11px] font-bold tracking-wide uppercase bg-slate-950/80 backdrop-blur-md text-amber-300 border border-amber-400/30">
+            {isPriceDropped && (
+              <span className="px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-wider bg-emerald-700 text-white shadow-2xs">
+                Price Drop
+              </span>
+            )}
+            {property.status === 'Hot Deal' && (
+              <span className="px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-wider bg-[#C82021] text-white shadow-2xs">
+                Hot Deal
+              </span>
+            )}
+            <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-gray-900/80 text-white backdrop-blur-xs">
               {property.propertyType}
             </span>
-            {property.status === 'Hot Deal' && (
-              <span className="px-2 py-0.5 rounded-xl text-[10px] font-bold bg-rose-500/90 text-white shadow-md">
-                🔥 Hot Deal
-              </span>
-            )}
-            {property.status === 'Price Drop' && (
-              <span className="px-2 py-0.5 rounded-xl text-[10px] font-bold bg-emerald-500/90 text-white shadow-md">
-                📉 Price Reduced
-              </span>
-            )}
-            {property.aiMatchScore && (
-              <span className="px-2.5 py-0.5 rounded-xl text-[10px] font-bold bg-amber-400 text-slate-950 flex items-center gap-1 shadow-md">
-                <Sparkles className="w-3 h-3 fill-slate-950" /> {property.aiMatchScore}% Match
-              </span>
-            )}
           </div>
 
           {/* Top-Right Action Buttons: Price Alert & Save */}
@@ -121,14 +120,14 @@ export const PropertyCard: React.FC<PropertyCardProps> = ({
                   e.stopPropagation();
                   onOpenPriceAlert(property);
                 }}
-                className={`p-2 rounded-xl backdrop-blur-md border transition-all ${
+                className={`p-2 rounded-full backdrop-blur-xs transition-colors shadow-2xs ${
                   hasAlert
-                    ? 'bg-amber-500 text-slate-950 border-amber-400 font-bold shadow-lg shadow-amber-500/20'
-                    : 'bg-slate-950/70 hover:bg-slate-900 border-white/10 text-white hover:text-amber-400'
+                    ? 'bg-[#C82021] text-white font-bold'
+                    : 'bg-white/90 hover:bg-white text-gray-700 hover:text-[#C82021]'
                 }`}
-                title={hasAlert ? 'تنبيه انخفاض السعر مفعل (Alert Active)' : 'تفعيل تنبيه انخفاض السعر (Set Price Alert)'}
+                title={hasAlert ? 'تنبيه السعر مفعّل (Alert Active)' : 'تفعيل تنبيه انخفاض السعر (Set Price Alert)'}
               >
-                <Bell className={`w-4 h-4 ${hasAlert ? 'fill-slate-950 text-slate-950' : ''}`} />
+                <Bell className={`w-3.5 h-3.5 ${hasAlert ? 'fill-white text-white' : ''}`} />
               </button>
             )}
 
@@ -137,126 +136,97 @@ export const PropertyCard: React.FC<PropertyCardProps> = ({
                 e.stopPropagation();
                 onToggleSave(property);
               }}
-              className="p-2 rounded-xl bg-slate-950/70 hover:bg-slate-900 backdrop-blur-md border border-white/10 text-white hover:text-amber-400 transition-colors"
-              title="Save Property"
+              className="p-2 rounded-full bg-white/90 hover:bg-white text-gray-700 hover:text-[#C82021] transition-colors shadow-2xs"
+              title="Save Property (حفظ العقار)"
             >
-              <Heart className={`w-4 h-4 ${isSaved ? 'fill-amber-400 text-amber-400' : ''}`} />
+              <Heart className={`w-3.5 h-3.5 ${isSaved ? 'fill-[#C82021] text-[#C82021]' : ''}`} />
             </button>
           </div>
         </div>
 
-        {/* Image index indicator dots */}
-        <div className="absolute bottom-2.5 left-1/2 -translate-x-1/2 flex items-center gap-1 pointer-events-none">
-          {property.images.map((_, idx) => (
-            <span
-              key={idx}
-              className={`w-1.5 h-1.5 rounded-full transition-all ${
-                idx === currentImgIndex ? 'bg-amber-400 w-4' : 'bg-white/50'
-              }`}
-            />
-          ))}
+        {/* Photo count indicator - Redfin Style */}
+        <div className="absolute bottom-2.5 right-2.5 bg-black/65 text-white text-[11px] font-medium px-2 py-0.5 rounded flex items-center gap-1 pointer-events-none">
+          <Camera className="w-3 h-3" />
+          <span>{currentImgIndex + 1}/{property.images.length}</span>
         </div>
 
-        {/* Virtual Tour Pill Badge */}
-        <div className="absolute bottom-3 left-3 pointer-events-auto">
+        {/* Virtual Tour Pill */}
+        <div className="absolute bottom-2.5 left-2.5 pointer-events-auto">
           <button
             onClick={(e) => {
               e.stopPropagation();
               onOpenVirtualTour(property);
             }}
-            className="flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-slate-950/85 hover:bg-amber-500 text-slate-200 hover:text-slate-950 backdrop-blur-md border border-white/10 text-xs font-semibold transition-all shadow-lg active:scale-95"
+            className="flex items-center gap-1 px-2.5 py-1 rounded bg-white/95 hover:bg-white text-gray-900 text-[11px] font-bold shadow-2xs transition-colors"
           >
-            <Eye className="w-3.5 h-3.5 text-amber-400 group-hover:text-inherit" />
-            360° Virtual Tour ({property.virtualTourRooms.length} Rooms)
+            <Eye className="w-3 h-3 text-[#C82021]" />
+            <span>3D Tour</span>
           </button>
         </div>
       </div>
 
-      {/* Property Details Body */}
-      <div className="p-5 flex-1 flex flex-col justify-between">
+      {/* Property Details Body - Redfin Clean Typography */}
+      <div className="p-4 flex-1 flex flex-col justify-between">
         <div>
           {/* Price & Monthly Estimate */}
-          <div className="flex items-baseline justify-between">
-            <div className="flex items-baseline gap-2">
-              <span className="text-xl sm:text-2xl font-extrabold text-white font-mono-num">
+          <div className="flex items-baseline justify-between gap-2">
+            <div className="flex items-baseline gap-2 flex-wrap">
+              <span className="text-2xl font-black text-gray-900 font-mono-num">
                 SAR {property.price.toLocaleString()}
               </span>
-              {property.originalPrice && property.originalPrice > property.price && (
-                <div className="flex items-center gap-1.5 flex-wrap">
-                  <span className="text-xs text-slate-500 line-through font-mono-num">
-                    SAR {property.originalPrice.toLocaleString()}
+              {isPriceDropped && (
+                <div className="flex items-center gap-1 text-xs">
+                  <span className="text-gray-400 line-through font-mono-num">
+                    SAR {property.originalPrice!.toLocaleString()}
                   </span>
-                  <span className="text-[10px] font-bold text-emerald-400 bg-emerald-500/10 px-1.5 py-0.5 rounded font-mono-num border border-emerald-500/20">
-                    -SAR {(property.originalPrice - property.price).toLocaleString()}
+                  <span className="text-emerald-700 font-bold font-mono-num text-[11px]">
+                    (-SAR {priceDropAmount.toLocaleString()})
                   </span>
                 </div>
               )}
             </div>
-            <span className="text-xs text-amber-400 font-mono-num font-semibold">
+            <span className="text-xs text-gray-500 font-mono-num">
               ~SAR {estimatedMonthlyInstallment.toLocaleString()}/mo
             </span>
           </div>
 
-          {/* Title & District */}
-          <h3 className="text-base font-bold text-slate-100 mt-1 line-clamp-1 group-hover:text-amber-300 transition-colors">
-            {property.title}
-          </h3>
-          <p className="text-xs text-slate-400 flex items-center gap-1 mt-1">
-            <MapPin className="w-3 h-3 text-slate-500 shrink-0" />
-            {property.district}, {property.city}
-          </p>
-
-          {/* Specs: Bed, Bath, Sqm */}
-          <div className="grid grid-cols-3 gap-2 py-3 my-3 border-y border-slate-800 text-xs text-slate-300 font-mono-num">
-            <div className="flex items-center gap-1.5">
-              <Bed className="w-4 h-4 text-amber-400/80" />
-              <span>{property.beds} <span className="text-slate-500 font-sans">Beds</span></span>
-            </div>
-            <div className="flex items-center gap-1.5">
-              <Bath className="w-4 h-4 text-amber-400/80" />
-              <span>{property.baths} <span className="text-slate-500 font-sans">Baths</span></span>
-            </div>
-            <div className="flex items-center gap-1.5">
-              <Square className="w-4 h-4 text-amber-400/80" />
-              <span>{property.sqm} <span className="text-slate-500 font-sans">m²</span></span>
-            </div>
+          {/* Specs inline row: beds · baths · sqm */}
+          <div className="flex items-center gap-2 mt-1.5 text-sm font-semibold text-gray-800">
+            <span>{property.beds} <span className="font-normal text-gray-500 text-xs">beds</span></span>
+            <span className="text-gray-300">·</span>
+            <span>{property.baths} <span className="font-normal text-gray-500 text-xs">baths</span></span>
+            <span className="text-gray-300">·</span>
+            <span>{property.sqm} <span className="font-normal text-gray-500 text-xs">sq m</span></span>
+            <span className="text-gray-300 hidden sm:inline">·</span>
+            <span className="text-xs text-gray-500 hidden sm:inline font-mono-num">
+              SAR {property.pricePerSqm.toLocaleString()}/m²
+            </span>
           </div>
+
+          {/* Address Line */}
+          <p className="text-xs text-gray-600 mt-1 line-clamp-1">
+            {property.address}, {property.district}
+          </p>
 
           {/* AI Match Reason if available */}
           {property.aiMatchReason && (
-            <div className="mb-3 p-2.5 rounded-xl bg-amber-400/10 border border-amber-400/20 text-xs text-amber-200">
-              <div className="flex items-center gap-1 font-semibold text-amber-300 mb-0.5">
-                <Sparkles className="w-3 h-3" /> AI Riyadh Insight
-              </div>
-              <p className="line-clamp-2 leading-relaxed text-[11px] text-slate-300">{property.aiMatchReason}</p>
-            </div>
+            <p className="text-[11px] text-gray-600 bg-gray-50 border border-gray-200 rounded-lg p-2 mt-2 line-clamp-2">
+              <strong className="text-gray-900">AI Note:</strong> {property.aiMatchReason}
+            </p>
           )}
-
-          {/* Tags */}
-          <div className="flex flex-wrap gap-1.5">
-            <span className="px-2 py-0.5 rounded-lg text-[10px] font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 flex items-center gap-1">
-              <ShieldCheck className="w-3 h-3" /> 10-Yr Malath Insurance
-            </span>
-            {property.tags.slice(0, 2).map((tag, i) => (
-              <span key={i} className="px-2 py-0.5 rounded-lg text-[10px] font-medium bg-slate-800 text-slate-400">
-                {tag}
-              </span>
-            ))}
-          </div>
         </div>
 
-        {/* Action Buttons Footer */}
-        <div className="mt-4 pt-3 border-t border-slate-800/80 flex items-center justify-between gap-2">
-          {/* Agent Avatar / Name */}
+        {/* Bottom Brokerage Bar - Redfin Certified Agent */}
+        <div className="mt-3 pt-3 border-t border-gray-100 flex items-center justify-between gap-2">
           <div className="flex items-center gap-2 min-w-0">
             <img
               src={property.agent.avatar}
               alt={property.agent.name}
-              className="w-7 h-7 rounded-full object-cover ring-1 ring-amber-400/30 shrink-0"
+              className="w-7 h-7 rounded-full object-cover ring-1 ring-gray-200 shrink-0"
             />
             <div className="truncate">
-              <p className="text-[11px] font-semibold text-slate-200 truncate">{property.agent.name}</p>
-              <p className="text-[10px] text-amber-400/80 truncate">★ {property.agent.rating} • REGA Fal Verified</p>
+              <p className="text-[11px] font-bold text-gray-800 truncate">{property.agent.name}</p>
+              <p className="text-[10px] text-gray-500 truncate">REGA Fal Verified · {property.agent.company}</p>
             </div>
           </div>
 
@@ -267,20 +237,20 @@ export const PropertyCard: React.FC<PropertyCardProps> = ({
                 e.stopPropagation();
                 onOpenAgentChat(property);
               }}
-              className="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white transition-all text-xs font-semibold"
+              className="p-2 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-700 transition-colors"
               title="Chat with Certified Broker"
             >
-              <MessageSquare className="w-4 h-4" />
+              <MessageSquare className="w-3.5 h-3.5" />
             </button>
             <button
               onClick={(e) => {
                 e.stopPropagation();
                 onOpenDocumentPrep(property);
               }}
-              className="flex items-center gap-1 px-3 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs shadow-md transition-all active:scale-95"
+              className="flex items-center gap-1 px-3 py-1.5 rounded-xl bg-[#C82021] hover:bg-[#b01c1d] text-white font-bold text-xs shadow-2xs transition-colors"
             >
-              <FileText className="w-3.5 h-3.5" />
-              Make Offer
+              <FileText className="w-3 h-3" />
+              <span>Make Offer</span>
             </button>
           </div>
         </div>
