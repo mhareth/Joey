@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
-import { Property, PropertyType } from './types';
-import { INITIAL_PROPERTIES } from './data/mockProperties';
+import { Property, PropertyType, PriceAlert } from './types';
+import { INITIAL_PROPERTIES, INITIAL_PRICE_ALERTS } from './data/mockProperties';
 import { Navbar, NavTab } from './components/Navbar';
 import { InteractiveMap } from './components/InteractiveMap';
 import { PropertyCard } from './components/PropertyCard';
@@ -13,6 +13,9 @@ import { MortgageHub } from './components/MortgageHub';
 import { DocumentPrepModal } from './components/DocumentPrepModal';
 import { SellHub } from './components/SellHub';
 import { SavedPropertiesModal } from './components/SavedPropertiesModal';
+import { PriceAlertModal } from './components/PriceAlertModal';
+import { PriceAlertsListModal } from './components/PriceAlertsListModal';
+import { PriceDropToast } from './components/PriceDropToast';
 import { 
   Sparkles, 
   MapPin, 
@@ -28,7 +31,7 @@ import {
 export default function App() {
   const [activeTab, setActiveTab] = useState<NavTab>('explore');
   const [properties, setProperties] = useState<Property[]>(INITIAL_PROPERTIES);
-  const [savedPropertyIds, setSavedPropertyIds] = useState<string[]>(['prop-austin-skyline']);
+  const [savedPropertyIds, setSavedPropertyIds] = useState<string[]>(['prop-riyadh-hittin-palace']);
   const [selectedProperty, setSelectedProperty] = useState<Property | null>(INITIAL_PROPERTIES[0]);
 
   // Modal States
@@ -36,6 +39,20 @@ export default function App() {
   const [agentChatProperty, setAgentChatProperty] = useState<Property | null>(null);
   const [documentPrepProperty, setDocumentPrepProperty] = useState<Property | null>(null);
   const [isSavedModalOpen, setIsSavedModalOpen] = useState<boolean>(false);
+
+  // Price Alert States
+  const [priceAlerts, setPriceAlerts] = useState<PriceAlert[]>(() => {
+    try {
+      const stored = localStorage.getItem('joey_price_alerts');
+      return stored ? JSON.parse(stored) : INITIAL_PRICE_ALERTS;
+    } catch {
+      return INITIAL_PRICE_ALERTS;
+    }
+  });
+  const [isSetAlertModalOpen, setIsSetAlertModalOpen] = useState<boolean>(false);
+  const [isAlertsListModalOpen, setIsAlertsListModalOpen] = useState<boolean>(false);
+  const [selectedAlertProperty, setSelectedAlertProperty] = useState<Property | null>(null);
+  const [activeToastAlert, setActiveToastAlert] = useState<PriceAlert | null>(null);
 
   // Filter States
   const [searchQuery, setSearchQuery] = useState<string>('');
@@ -100,12 +117,97 @@ export default function App() {
 
   const handleResetFilters = () => {
     setSearchQuery('');
-    setSelectedCity('All Cities');
+    setSelectedCity('All Districts');
     setSelectedType('All Types');
     setMinPrice(0);
-    setMaxPrice(10000000);
+    setMaxPrice(25000000);
     setMinBeds(0);
     setSortBy('featured');
+  };
+
+  const handleSaveAlert = (newAlert: PriceAlert) => {
+    setPriceAlerts((prev) => {
+      const updated = [newAlert, ...prev];
+      try {
+        localStorage.setItem('joey_price_alerts', JSON.stringify(updated));
+      } catch {}
+      return updated;
+    });
+  };
+
+  const handleToggleAlertActive = (alertId: string) => {
+    setPriceAlerts((prev) => {
+      const updated = prev.map((a) => (a.id === alertId ? { ...a, active: !a.active } : a));
+      try {
+        localStorage.setItem('joey_price_alerts', JSON.stringify(updated));
+      } catch {}
+      return updated;
+    });
+  };
+
+  const handleDeleteAlert = (alertId: string) => {
+    setPriceAlerts((prev) => {
+      const updated = prev.filter((a) => a.id !== alertId);
+      try {
+        localStorage.setItem('joey_price_alerts', JSON.stringify(updated));
+      } catch {}
+      return updated;
+    });
+  };
+
+  const handleSimulatePriceDrop = (alertId: string) => {
+    const targetAlert = priceAlerts.find((a) => a.id === alertId);
+    if (!targetAlert) return;
+
+    const propId = targetAlert.propertyId || properties[0].id;
+    const prop = properties.find((p) => p.id === propId) || properties[0];
+
+    const dropPercentage = targetAlert.targetDropPercent || 5;
+    const oldPrice = prop.price;
+    const newPrice = Math.round(oldPrice * (1 - dropPercentage / 100));
+    const savings = oldPrice - newPrice;
+
+    // 1. Update property price in catalog
+    setProperties((prev) =>
+      prev.map((p) => {
+        if (p.id === prop.id) {
+          return {
+            ...p,
+            price: newPrice,
+            originalPrice: oldPrice,
+            status: 'Price Drop' as const,
+          };
+        }
+        return p;
+      })
+    );
+
+    // 2. Mark alert as triggered
+    const triggeredData = {
+      oldPrice,
+      newPrice,
+      savingsSAR: savings,
+      dropPercent: dropPercentage,
+      date: 'Just now (الآن)',
+    };
+
+    const updatedAlert: PriceAlert = {
+      ...targetAlert,
+      currentPrice: newPrice,
+      isTriggered: true,
+      triggeredDetails: triggeredData,
+    };
+
+    setPriceAlerts((prev) => {
+      const updated = prev.map((a) => (a.id === alertId ? updatedAlert : a));
+      try {
+        localStorage.setItem('joey_price_alerts', JSON.stringify(updated));
+      } catch {}
+      return updated;
+    });
+
+    // 3. Show floating toast notification!
+    setActiveToastAlert(updatedAlert);
   };
 
   const handleAddProperty = (newProp: Property) => {
@@ -117,6 +219,10 @@ export default function App() {
     return properties.filter((p) => savedPropertyIds.includes(p.id));
   }, [properties, savedPropertyIds]);
 
+  const triggeredAlertsCount = useMemo(() => {
+    return priceAlerts.filter((a) => a.isTriggered).length;
+  }, [priceAlerts]);
+
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col selection:bg-amber-500/30 selection:text-amber-200">
       
@@ -126,6 +232,9 @@ export default function App() {
         setActiveTab={setActiveTab}
         savedCount={savedPropertyIds.length}
         onOpenSaved={() => setIsSavedModalOpen(true)}
+        priceAlertsCount={priceAlerts.length}
+        triggeredAlertsCount={triggeredAlertsCount}
+        onOpenPriceAlerts={() => setIsAlertsListModalOpen(true)}
         searchQuery={searchQuery}
         setSearchQuery={setSearchQuery}
       />
@@ -154,6 +263,10 @@ export default function App() {
               sortBy={sortBy}
               setSortBy={setSortBy}
               onResetFilters={handleResetFilters}
+              onOpenSearchPriceAlert={() => {
+                setSelectedAlertProperty(null);
+                setIsSetAlertModalOpen(true);
+              }}
               totalCount={filteredProperties.length}
             />
 
@@ -180,6 +293,11 @@ export default function App() {
                           key={property.id}
                           property={property}
                           isSaved={savedPropertyIds.includes(property.id)}
+                          hasAlert={priceAlerts.some((a) => a.propertyId === property.id && a.active)}
+                          onOpenPriceAlert={(p) => {
+                            setSelectedAlertProperty(p);
+                            setIsSetAlertModalOpen(true);
+                          }}
                           onToggleSave={handleToggleSave}
                           onOpenVirtualTour={(p) => setVirtualTourProperty(p)}
                           onOpenAgentChat={(p) => setAgentChatProperty(p)}
@@ -212,6 +330,11 @@ export default function App() {
                         key={property.id}
                         property={property}
                         isSaved={savedPropertyIds.includes(property.id)}
+                        hasAlert={priceAlerts.some((a) => a.propertyId === property.id && a.active)}
+                        onOpenPriceAlert={(p) => {
+                          setSelectedAlertProperty(p);
+                          setIsSetAlertModalOpen(true);
+                        }}
                         onToggleSave={handleToggleSave}
                         onOpenVirtualTour={(p) => setVirtualTourProperty(p)}
                         onOpenAgentChat={(p) => setAgentChatProperty(p)}
@@ -255,6 +378,10 @@ export default function App() {
             onOpenVirtualTour={(p) => setVirtualTourProperty(p)}
             onOpenAgentChat={(p) => setAgentChatProperty(p)}
             onOpenDocumentPrep={(p) => setDocumentPrepProperty(p)}
+            onOpenPriceAlert={(p) => {
+              setSelectedAlertProperty(p);
+              setIsSetAlertModalOpen(true);
+            }}
             onApplyRecommendations={(ranked) => {
               setProperties(ranked);
               setActiveTab('explore');
@@ -394,6 +521,58 @@ export default function App() {
           onClose={() => setIsSavedModalOpen(false)}
           onRemoveSaved={handleToggleSave}
           onOpenVirtualTour={(p) => setVirtualTourProperty(p)}
+          onOpenDocumentPrep={(p) => setDocumentPrepProperty(p)}
+        />
+      )}
+
+      {/* Set Price Alert Modal */}
+      {isSetAlertModalOpen && (
+        <PriceAlertModal
+          property={selectedAlertProperty}
+          searchCriteria={selectedAlertProperty ? null : {
+            district: selectedCity,
+            propertyType: selectedType,
+            maxBudget: maxPrice,
+          }}
+          onClose={() => {
+            setIsSetAlertModalOpen(false);
+            setSelectedAlertProperty(null);
+          }}
+          onSaveAlert={handleSaveAlert}
+        />
+      )}
+
+      {/* Saved Price Alerts List Modal */}
+      {isAlertsListModalOpen && (
+        <PriceAlertsListModal
+          alerts={priceAlerts}
+          properties={properties}
+          onClose={() => setIsAlertsListModalOpen(false)}
+          onToggleActive={handleToggleAlertActive}
+          onDeleteAlert={handleDeleteAlert}
+          onSimulatePriceDrop={handleSimulatePriceDrop}
+          onSelectProperty={(p) => {
+            setSelectedProperty(p);
+            setActiveTab('explore');
+          }}
+          onOpenDocumentPrep={(p) => setDocumentPrepProperty(p)}
+          onOpenSetAlertModal={() => {
+            setSelectedAlertProperty(null);
+            setIsSetAlertModalOpen(true);
+          }}
+        />
+      )}
+
+      {/* Real-time Price Drop Toast Notification */}
+      {activeToastAlert && (
+        <PriceDropToast
+          alert={activeToastAlert}
+          property={properties.find((p) => p.id === activeToastAlert.propertyId)}
+          onClose={() => setActiveToastAlert(null)}
+          onViewProperty={(p) => {
+            setSelectedProperty(p);
+            setActiveTab('explore');
+          }}
           onOpenDocumentPrep={(p) => setDocumentPrepProperty(p)}
         />
       )}

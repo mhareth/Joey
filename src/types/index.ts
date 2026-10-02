@@ -154,3 +154,35 @@ export interface AgentChatMessage {
     data?: any;
   };
 }
+
+export interface PriceAlert {
+  id: string;
+  type: 'property' | 'criteria';
+  propertyId?: string;
+  propertyTitle?: string;
+  propertyImage?: string;
+  district?: string;
+  propertyType?: string;
+  initialPrice: number;
+  currentPrice: number;
+  targetPrice: number;
+  targetDropPercent: number;
+  email: string;
+  channels: {
+    inApp: boolean;
+    email: boolean;
+    whatsapp: boolean;
+  };
+  frequency: 'instant' | 'daily';
+  active: boolean;
+  createdAt: string;
+  isTriggered: boolean;
+  triggeredDetails?: {
+    oldPrice: number;
+    newPrice: number;
+    savingsSAR: number;
+    dropPercent: number;
+    date: string;
+  };
+}
+

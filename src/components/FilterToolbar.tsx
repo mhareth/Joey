@@ -1,6 +1,6 @@
 import React from 'react';
 import { PropertyType } from '../types';
-import { Map, Grid, RotateCcw } from 'lucide-react';
+import { Map, Grid, RotateCcw, Bell } from 'lucide-react';
 
 interface FilterToolbarProps {
   viewMode: 'split' | 'grid' | 'map';
@@ -18,6 +18,7 @@ interface FilterToolbarProps {
   sortBy: string;
   setSortBy: (sort: string) => void;
   onResetFilters: () => void;
+  onOpenSearchPriceAlert?: () => void;
   totalCount: number;
 }
 
@@ -56,6 +57,7 @@ export const FilterToolbar: React.FC<FilterToolbarProps> = ({
   sortBy,
   setSortBy,
   onResetFilters,
+  onOpenSearchPriceAlert,
   totalCount,
 }) => {
   return (
@@ -184,14 +186,25 @@ export const FilterToolbar: React.FC<FilterToolbarProps> = ({
           </select>
         </div>
 
-        {/* Reset Filter Button */}
-        <div className="col-span-2 sm:col-span-4 lg:col-span-2 flex items-end">
+        {/* Actions: Search Alert & Reset Filters */}
+        <div className="col-span-2 sm:col-span-4 lg:col-span-2 flex items-end gap-2">
+          {onOpenSearchPriceAlert && (
+            <button
+              onClick={onOpenSearchPriceAlert}
+              className="flex-1 flex items-center justify-center gap-1.5 py-2 px-2.5 rounded-xl bg-amber-500/15 hover:bg-amber-500/25 text-amber-300 hover:text-amber-200 text-xs font-bold transition-all border border-amber-500/30 whitespace-nowrap"
+              title="تفعيل تنبيه لنتائج البحث وانخفاض الأسعار"
+            >
+              <Bell className="w-3.5 h-3.5" />
+              <span>تنبيه البحث</span>
+            </button>
+          )}
+
           <button
             onClick={onResetFilters}
-            className="w-full flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl bg-slate-800/80 hover:bg-slate-800 text-xs font-semibold text-slate-300 hover:text-white transition-all border border-slate-700/60"
+            className="flex-1 flex items-center justify-center gap-1.5 py-2 px-2.5 rounded-xl bg-slate-800/80 hover:bg-slate-800 text-xs font-semibold text-slate-300 hover:text-white transition-all border border-slate-700/60 whitespace-nowrap"
           >
             <RotateCcw className="w-3.5 h-3.5" />
-            Reset All Filters
+            <span>إعادة ضبط</span>
           </button>
         </div>
       </div>

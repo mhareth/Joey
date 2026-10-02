@@ -9,7 +9,8 @@ import {
   MessageSquare, 
   FileText,
   Loader2,
-  ShieldCheck
+  ShieldCheck,
+  Bell
 } from 'lucide-react';
 
 interface RecommendationHubProps {
@@ -17,6 +18,7 @@ interface RecommendationHubProps {
   onOpenVirtualTour: (property: Property) => void;
   onOpenAgentChat: (property: Property) => void;
   onOpenDocumentPrep: (property: Property) => void;
+  onOpenPriceAlert?: (property: Property) => void;
   onApplyRecommendations: (updatedProperties: Property[]) => void;
 }
 
@@ -38,6 +40,7 @@ export const RecommendationHub: React.FC<RecommendationHubProps> = ({
   onOpenVirtualTour,
   onOpenAgentChat,
   onOpenDocumentPrep,
+  onOpenPriceAlert,
   onApplyRecommendations,
 }) => {
   const [profile, setProfile] = useState<BuyerProfile>({
@@ -361,6 +364,16 @@ export const RecommendationHub: React.FC<RecommendationHubProps> = ({
 
                     {/* Actions */}
                     <div className="flex items-center justify-end gap-2 mt-4 pt-3 border-t border-slate-800">
+                      {onOpenPriceAlert && (
+                        <button
+                          onClick={() => onOpenPriceAlert(property)}
+                          className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold transition-all"
+                          title="تفعيل تنبيه انخفاض السعر"
+                        >
+                          <Bell className="w-3.5 h-3.5 text-amber-400" />
+                          تنبيه السعر
+                        </button>
+                      )}
                       <button
                         onClick={() => onOpenVirtualTour(property)}
                         className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold transition-all"

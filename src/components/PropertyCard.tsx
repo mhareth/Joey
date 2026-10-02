@@ -12,13 +12,16 @@ import {
   MapPin, 
   ChevronLeft, 
   ChevronRight,
-  ShieldCheck
+  ShieldCheck,
+  Bell
 } from 'lucide-react';
 
 interface PropertyCardProps {
   property: Property;
   isSaved: boolean;
+  hasAlert?: boolean;
   onToggleSave: (property: Property) => void;
+  onOpenPriceAlert?: (property: Property) => void;
   onOpenVirtualTour: (property: Property) => void;
   onOpenAgentChat: (property: Property) => void;
   onOpenDocumentPrep: (property: Property) => void;
@@ -28,7 +31,9 @@ interface PropertyCardProps {
 export const PropertyCard: React.FC<PropertyCardProps> = ({
   property,
   isSaved,
+  hasAlert,
   onToggleSave,
+  onOpenPriceAlert,
   onOpenVirtualTour,
   onOpenAgentChat,
   onOpenDocumentPrep,
@@ -108,17 +113,36 @@ export const PropertyCard: React.FC<PropertyCardProps> = ({
             )}
           </div>
 
-          {/* Save Button */}
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              onToggleSave(property);
-            }}
-            className="p-2 rounded-xl bg-slate-950/70 hover:bg-slate-900 backdrop-blur-md border border-white/10 text-white hover:text-amber-400 transition-colors pointer-events-auto"
-            title="Save Property"
-          >
-            <Heart className={`w-4 h-4 ${isSaved ? 'fill-amber-400 text-amber-400' : ''}`} />
-          </button>
+          {/* Top-Right Action Buttons: Price Alert & Save */}
+          <div className="flex items-center gap-1.5 pointer-events-auto">
+            {onOpenPriceAlert && (
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onOpenPriceAlert(property);
+                }}
+                className={`p-2 rounded-xl backdrop-blur-md border transition-all ${
+                  hasAlert
+                    ? 'bg-amber-500 text-slate-950 border-amber-400 font-bold shadow-lg shadow-amber-500/20'
+                    : 'bg-slate-950/70 hover:bg-slate-900 border-white/10 text-white hover:text-amber-400'
+                }`}
+                title={hasAlert ? 'تنبيه انخفاض السعر مفعل (Alert Active)' : 'تفعيل تنبيه انخفاض السعر (Set Price Alert)'}
+              >
+                <Bell className={`w-4 h-4 ${hasAlert ? 'fill-slate-950 text-slate-950' : ''}`} />
+              </button>
+            )}
+
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onToggleSave(property);
+              }}
+              className="p-2 rounded-xl bg-slate-950/70 hover:bg-slate-900 backdrop-blur-md border border-white/10 text-white hover:text-amber-400 transition-colors"
+              title="Save Property"
+            >
+              <Heart className={`w-4 h-4 ${isSaved ? 'fill-amber-400 text-amber-400' : ''}`} />
+            </button>
+          </div>
         </div>
 
         {/* Image index indicator dots */}
@@ -157,10 +181,15 @@ export const PropertyCard: React.FC<PropertyCardProps> = ({
               <span className="text-xl sm:text-2xl font-extrabold text-white font-mono-num">
                 SAR {property.price.toLocaleString()}
               </span>
-              {property.originalPrice && (
-                <span className="text-xs text-slate-500 line-through font-mono-num">
-                  SAR {property.originalPrice.toLocaleString()}
-                </span>
+              {property.originalPrice && property.originalPrice > property.price && (
+                <div className="flex items-center gap-1.5 flex-wrap">
+                  <span className="text-xs text-slate-500 line-through font-mono-num">
+                    SAR {property.originalPrice.toLocaleString()}
+                  </span>
+                  <span className="text-[10px] font-bold text-emerald-400 bg-emerald-500/10 px-1.5 py-0.5 rounded font-mono-num border border-emerald-500/20">
+                    -SAR {(property.originalPrice - property.price).toLocaleString()}
+                  </span>
+                </div>
               )}
             </div>
             <span className="text-xs text-amber-400 font-mono-num font-semibold">

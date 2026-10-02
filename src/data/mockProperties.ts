@@ -1,4 +1,4 @@
-import { Property, MortgageQuote } from '../types';
+import { Property, MortgageQuote, PriceAlert } from '../types';
 
 export const INITIAL_PROPERTIES: Property[] = [
   {
@@ -651,3 +651,85 @@ export const MOCK_MORTGAGE_QUOTES = (loanAmountSAR: number): MortgageQuote[] => 
     }
   ];
 };
+
+export const INITIAL_PRICE_ALERTS: PriceAlert[] = [
+  {
+    id: 'alert-hittin-palace',
+    type: 'property',
+    propertyId: 'prop-riyadh-hittin-palace',
+    propertyTitle: 'The Hittin Sovereign Villa | قصر حطين المودرن',
+    propertyImage: 'https://images.unsplash.com/photo-1613490493576-7fde63acd811?auto=format&fit=crop&w=1600&q=80',
+    district: 'Hittin (حي حطين)',
+    initialPrice: 9400000,
+    currentPrice: 8900000,
+    targetPrice: 9000000,
+    targetDropPercent: 5,
+    email: 'm.hareth@gmail.com',
+    channels: {
+      inApp: true,
+      email: true,
+      whatsapp: true,
+    },
+    frequency: 'instant',
+    active: true,
+    createdAt: '2026-09-28T14:30:00.000Z',
+    isTriggered: true,
+    triggeredDetails: {
+      oldPrice: 9400000,
+      newPrice: 8900000,
+      savingsSAR: 500000,
+      dropPercent: 5.3,
+      date: 'Today, 2 hours ago (اليوم، منذ ساعتين)',
+    }
+  },
+  {
+    id: 'alert-kafd-penthouse',
+    type: 'property',
+    propertyId: 'prop-riyadh-kafd-penthouse',
+    propertyTitle: 'The KAFD Horizon Sky Villa | بنتهاوس كافد البانورامي',
+    propertyImage: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1600&q=80',
+    district: 'KAFD (مركز الملك عبدالله المالي)',
+    initialPrice: 6200000,
+    currentPrice: 6200000,
+    targetPrice: 5890000,
+    targetDropPercent: 5,
+    email: 'm.hareth@gmail.com',
+    channels: {
+      inApp: true,
+      email: true,
+      whatsapp: false,
+    },
+    frequency: 'instant',
+    active: true,
+    createdAt: '2026-09-30T10:15:00.000Z',
+    isTriggered: false,
+  },
+  {
+    id: 'alert-malqa-search-criteria',
+    type: 'criteria',
+    district: 'Al Malqa (الملقا)',
+    propertyType: 'Luxury Modern Villa',
+    initialPrice: 5000000,
+    currentPrice: 4950000,
+    targetPrice: 4800000,
+    targetDropPercent: 5,
+    email: 'm.hareth@gmail.com',
+    channels: {
+      inApp: true,
+      email: true,
+      whatsapp: true,
+    },
+    frequency: 'daily',
+    active: true,
+    createdAt: '2026-10-01T08:00:00.000Z',
+    isTriggered: true,
+    triggeredDetails: {
+      oldPrice: 5200000,
+      newPrice: 4950000,
+      savingsSAR: 250000,
+      dropPercent: 4.8,
+      date: 'Yesterday (أمس)',
+    }
+  }
+];
+

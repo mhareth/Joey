@@ -9,7 +9,8 @@ import {
   FileText, 
   Heart, 
   Search,
-  ShieldCheck
+  ShieldCheck,
+  Bell
 } from 'lucide-react';
 
 export type NavTab = 'explore' | 'recommendations' | 'market' | 'sell' | 'mortgage' | 'documents';
@@ -19,6 +20,9 @@ interface NavbarProps {
   setActiveTab: (tab: NavTab) => void;
   savedCount: number;
   onOpenSaved: () => void;
+  priceAlertsCount: number;
+  triggeredAlertsCount: number;
+  onOpenPriceAlerts: () => void;
   searchQuery: string;
   setSearchQuery: (query: string) => void;
 }
@@ -28,6 +32,9 @@ export const Navbar: React.FC<NavbarProps> = ({
   setActiveTab,
   savedCount,
   onOpenSaved,
+  priceAlertsCount,
+  triggeredAlertsCount,
+  onOpenPriceAlerts,
   searchQuery,
   setSearchQuery,
 }) => {
@@ -158,10 +165,30 @@ export const Navbar: React.FC<NavbarProps> = ({
 
           {/* Right Action Buttons */}
           <div className="flex items-center gap-2">
+            {/* Price Alerts Bell Button */}
+            <button
+              onClick={onOpenPriceAlerts}
+              className={`relative p-2.5 rounded-xl border transition-all ${
+                triggeredAlertsCount > 0
+                  ? 'bg-amber-500/15 border-amber-400 text-amber-300 shadow-md shadow-amber-500/10'
+                  : 'bg-slate-900 border-slate-800 text-slate-300 hover:text-amber-400 hover:border-amber-500/30'
+              }`}
+              title="تنبيهات أسعار العقارات (Saved Price Alerts)"
+            >
+              <Bell className="w-4 h-4" />
+              {priceAlertsCount > 0 && (
+                <span className={`absolute -top-1 -right-1 min-w-[20px] h-5 px-1 text-slate-950 text-[10px] font-extrabold rounded-full flex items-center justify-center shadow ${
+                  triggeredAlertsCount > 0 ? 'bg-emerald-400 animate-pulse' : 'bg-amber-500'
+                }`}>
+                  {priceAlertsCount}
+                </span>
+              )}
+            </button>
+
             <button
               onClick={onOpenSaved}
               className="relative p-2.5 rounded-xl bg-slate-900 border border-slate-800 text-slate-300 hover:text-amber-400 hover:border-amber-500/30 transition-all"
-              title="Saved Properties"
+              title="Saved Properties (العقارات المحفوظة)"
             >
               <Heart className="w-4 h-4" />
               {savedCount > 0 && (
