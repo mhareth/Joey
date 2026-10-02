@@ -2,5 +2,7 @@
   "name": "EstateIQ - AI Property Finder & Real Estate Transaction Hub",
   "description": "joey.properties (جوي للعقارات) - AI-powered property finder to buy, sell, and invest in Riyadh, Saudi Arabia with real-time market insights, interactive map search, 360° virtual tours, Islamic mortgage rate comparisons, agent communication, and automated closing document generation.",
   "requestFramePermissions": [],
-  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
 }
